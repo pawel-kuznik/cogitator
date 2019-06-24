@@ -1,2 +1,4 @@
 node_modules
 **.swp
+client/script.js
+package-lock.json
