@@ -1,0 +1,23 @@
+/**
+ *  Styles for the HTML element and the :root selector.
+ */
+
+/* reset HTML element */
+html
+{
+    margin:         0;
+    padding:        0;
+
+    background:     #262525;
+    color:          #E3E3E6;
+
+    font-family:    monospace;
+}
+
+/* set colors used across the application */
+:root
+{
+    --color-font:       #E3E3E6;
+    --color-background: #262525;
+    --color-hover:      rgba(227, 227, 230, .4);
+}

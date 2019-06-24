@@ -1,0 +1,21 @@
+
+
+.box
+{
+    border-top:     2px solid var(--color-font);
+
+    padding-top:    1rem;
+
+    margin-bottom:  2rem;
+    margin-top:     1rem;
+}
+
+.box.size-page
+{
+    max-width:      80em;
+}
+
+.box.size-halfpage
+{
+    max-width:      40em;
+}

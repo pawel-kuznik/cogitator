@@ -1,0 +1,24 @@
+/**
+ *  Styles for inputs used inside the whole application.
+ */
+
+/* basic styles for the inptus */
+input[type="text"],
+input[type="password"],
+input[type="number"],
+textarea,
+select
+{
+    background:     transparent;
+
+    border:         1px solid #E3E3E6;
+    color:          var(--color-font);
+}
+
+/* styles for when the element is focused */
+input:focus,
+textarea:focus,
+select:focus
+{
+    outline:        none;
+}
