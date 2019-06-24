@@ -2,10 +2,27 @@
  *  The kickstart file.
  */
 
+// dependencies
+const Router        = require('waystone').Router;
+const Container     = require('sparkle').Container;
+const TemplateStore = require('408k').TemplateStore;
+
 // install on document loaded event
 document.addEventListener('DOMContentLoaded', () => {
 
     // tell that the application starts
     console.info('starting application');
+
+    // the template store
+    const templateStore = new TemplateStore();
+
+    // construct a router
+    const router = new Router();
+
+    // construct the main container
+    const container = new Container();
+
+    // append the container to the body
+    container.appendTo(document.querySelector('body'));
 });
 
