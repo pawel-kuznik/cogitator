@@ -20,4 +20,5 @@ html
     --color-font:       #E3E3E6;
     --color-background: #262525;
     --color-hover:      rgba(227, 227, 230, .4);
+    --color-input-border: rgba(212, 212, 217, 0.6);
 }

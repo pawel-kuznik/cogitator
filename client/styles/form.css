@@ -1,0 +1,35 @@
+
+.formrow
+{
+    margin-bottom:  2rem;
+    margin-top:     1rem;
+}
+
+.formrow label
+{
+    display:    block;
+}
+
+.formrow input,
+.formrow select,
+.formrow textarea
+{
+    display:    block;
+    width:      100%;
+
+    box-sizing: border-box;
+
+    padding-right:  .5rem;
+
+    padding-top:    .25rem;
+    padding-bottom: .25rem;
+}
+
+.formrow input,
+.formrow select
+{
+    border-top:     none;
+    border-left:    none;
+    border-right:   none;
+}
+

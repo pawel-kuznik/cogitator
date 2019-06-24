@@ -1,0 +1,31 @@
+
+
+.list
+{
+    list-style:     none;
+
+    margin-top:     1rem;
+    margin-bottom:  2rem;
+
+    padding:        0;
+}
+
+.list > li
+{
+    padding: 0;
+}
+
+.list.list-decorated > li::before
+{
+    content:        '>++';
+    margin-right:   1rem;
+    opacity:        .6;
+
+    text-shadow:    0 0 3px var(--color-font);
+}
+
+.list.list-inline > li
+{
+    display:        inline-block;
+    white-space:    nowrap;
+}
