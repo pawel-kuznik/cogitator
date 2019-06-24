@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "sparkle": "github:pawel-kuznik/sparkle"
+    "sparkle": "github:pawel-kuznik/sparkle",
+    "waystone": "github:pawel-kuznik/waystone"
   }
 }
