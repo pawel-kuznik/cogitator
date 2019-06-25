@@ -24,5 +24,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // append the container to the body
     container.appendTo(document.querySelector('body'));
+
+    // define all routes
+    router.append('/squads', () => { container.install(require('./Squads.js')); });
+    
+    // the function to resolve the router with current path
+    const resolve = () => { router.resolve(window.location.hash.substring(1)); };
+
+    // resolve the path
+    resolve();
+
+    // make sure the path changes the current component
+    window.addEventListener('hashchange', () => { resolve(); });
 });
 
