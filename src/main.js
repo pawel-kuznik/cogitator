@@ -26,7 +26,9 @@ document.addEventListener('DOMContentLoaded', () => {
     container.appendTo(document.querySelector('body'));
 
     // define all routes
-    router.append('/squads', () => { container.install(require('./Squads.js')); });
+    router.append('/squads',            () => { container.install(require('./Squads.js')); });
+    router.append('/squads/create',     () => { container.install(require('./SquadForm.js'), templateStore.buildSquad()); });
+    router.append('/squads/:id',        params => { container.install(require('./SquadForm.js')), templateStore.fetchSquad(params.id); });
     
     // the function to resolve the router with current path
     const resolve = () => { router.resolve(window.location.hash.substring(1)); };
