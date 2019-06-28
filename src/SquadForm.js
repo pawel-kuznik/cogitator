@@ -4,6 +4,7 @@
 
 // the dependencies
 const Form = require('sparkle').Form;
+const form = require('sparkle').form;
 
 // export the class
 module.exports = class extends Form {
@@ -15,6 +16,14 @@ module.exports = class extends Form {
     constructor(squad) {
 
         // call the parent
-        super();
+        super({
+            data:       squad,
+            template:   '/templates/squadForm.html'
+        });
+
+        console.log(this.elem);
+
+        this.on('submitted', console.log);
     }
+
 };
