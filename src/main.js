@@ -1,5 +1,8 @@
 /**
- *  The kickstart file.
+ *  The kickstart file. Basically this file registers all router routes,
+ *  loads the data stores, and eventually starts the actual application.
+ *
+ *  @author     Paweł Kuźnik <pawel.kuznik@gmail.com>
  */
 
 // dependencies
@@ -27,8 +30,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // define all routes
     router.append('/squads',            () => { container.install(require('./Squads.js')); });
-    router.append('/squads/create',     () => { container.install(require('./SquadForm.js'), templateStore.buildSquad()); });
-    router.append('/squads/:id',        params => { container.install(require('./SquadForm.js')), templateStore.fetchSquad(params.id); });
+    router.append('/create-squad',      () => { container.install(require('./SquadForm.js'), templateStore.buildSquad()); });
+    router.append('/squads/:id',        params => { container.install(require('./SquadForm.js'), templateStore.fetchSquad(params.id)); });
     
     // the function to resolve the router with current path
     const resolve = () => { router.resolve(window.location.hash.substring(1)); };

@@ -4,7 +4,6 @@
 
 // the dependencies
 const Form = require('sparkle').Form;
-const form = require('sparkle').form;
 
 // export the class
 module.exports = class extends Form {
@@ -21,9 +20,11 @@ module.exports = class extends Form {
             template:   '/templates/squadForm.html'
         });
 
-        console.log(this.elem);
+        // install on submitted handler
+        this.on('submit', event => {
 
-        this.on('submitted', console.log);
+            console.log(event);
+        });
     }
 
 };

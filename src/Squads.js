@@ -14,6 +14,6 @@ module.exports = class extends ListPage {
     constructor() {
 
         // call the parent class
-        super('/#/squads/create');
+        super('/#/create-squad');
     }
 };
