@@ -1,9 +1,11 @@
 /**
- *  A form dealing with a squad.
+ *  This is a component that presents the user with an editor to edit a squad template.
+ *  The component can be supplied with a brand new instance or one comming from storage.
  */
 
 // the dependencies
-const Form = require('sparkle').Form;
+const Component     = require('sparkle').Component;
+const Form          = require('sparkle').Form;
 
 // export the class
 module.exports = class extends Form {
@@ -22,6 +24,9 @@ module.exports = class extends Form {
 
         // install on submitted handler
         this.on('submit', event => {
+
+            // store the 
+            this.data.store();
 
             console.log(event);
         });
