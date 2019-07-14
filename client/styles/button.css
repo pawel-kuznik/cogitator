@@ -1,0 +1,9 @@
+button,
+.button,
+input[type="submit"]
+{
+    border:     0;
+
+    background: cyan;
+
+}

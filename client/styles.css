@@ -1,7 +1,12 @@
-
+/**
+ *  A kickstart file for all the styles.
+ *
+ *  @author     Paweł Kuźnik <pawel.kuznik@gmail.com>
+ */
 
 @import "/styles/html.css";
 @import "/styles/input.css";
+@import "/styles/button.css";
 @import "/styles/form.css";
 @import "/styles/list.css";
 @import "/styles/table.css";
