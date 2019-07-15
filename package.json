@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "408k": "github:pawel-kuznik/408k",
+    "pocketdata": "github:pawel-kuznik/pocketdata",
     "sparkle": "github:pawel-kuznik/sparkle",
     "waystone": "github:pawel-kuznik/waystone"
   }

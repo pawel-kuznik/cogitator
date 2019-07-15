@@ -6,9 +6,10 @@
  */
 
 // dependencies
-const Router        = require('waystone').Router;
-const Container     = require('sparkle').Container;
-const TemplateStore = require('408k').TemplateStore;
+const Router            = require('waystone').Router;
+const Container         = require('sparkle').Container;
+const TemplateStore     = require('408k').TemplateStore;
+const WebLocalStorage   = require('pocketdata').LocalWebStorage;
 
 // install on document loaded event
 document.addEventListener('DOMContentLoaded', () => {
@@ -17,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     console.info('starting application');
 
     // the template store
-    const templateStore = new TemplateStore();
+    const templateStore = new TemplateStore(new WebLocalStorage('templates'));
 
     // construct a router
     const router = new Router();
