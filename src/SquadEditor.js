@@ -39,8 +39,6 @@ module.exports = class extends Component {
 
                 // flush the changes
                 squad.root.flush();
-
-                console.log('squad stored');
             });
             
             // install handling on the delete button
@@ -55,18 +53,6 @@ module.exports = class extends Component {
 
             // append the name form top the div
             nameForm.appendTo(this.elem.querySelector('section > div'));
-
-
-        });
-
-        // install on submitted handler
-        this.on('submit', event => {
-
-            // store the 
-            this.data.store();
-
-            console.log(event);
         });
     }
-
 };
