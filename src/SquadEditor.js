@@ -6,6 +6,7 @@
 // the dependencies
 const Component     = require('sparkle').Component;
 const Form          = require('sparkle').Form;
+const Type          = require('./SquadEditor/Type.js');
 
 // export the class
 module.exports = class extends Component {
@@ -22,6 +23,9 @@ module.exports = class extends Component {
         // create the name form
         const nameForm = this.adopt(new Form({ data: squad, template: '/templates/squadForm.html' }));
 
+        // create the type input
+        const typeForm = this.adopt(new Type({ data: squad }));
+
         // wait for the component to be fully initialized
         this.then(() => {
 
@@ -30,6 +34,9 @@ module.exports = class extends Component {
 
             // install handling on the store button
             this.elem.querySelector('.button-store').addEventListener('click', () => {
+
+                // push the type
+                typeForm.push();
 
                 // push changes from the name form
                 nameForm.push();
@@ -51,8 +58,12 @@ module.exports = class extends Component {
                 squad.root.flush();
             });
 
+            // get the content
+            const content = this.elem.querySelector('section > div');
+
             // append the name form top the div
-            nameForm.appendTo(this.elem.querySelector('section > div'));
+            nameForm.appendTo(content);
+            typeForm.appendTo(content);
         });
     }
 };
