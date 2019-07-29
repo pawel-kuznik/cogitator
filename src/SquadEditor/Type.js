@@ -18,7 +18,7 @@ module.exports = class extends Form {
 
         // construct the form row
         const row = document.createElement('DIV');
-        row.classList.add('form-row');
+        row.classList.add('formrow');
         this.append(row);
 
         // construct the label

@@ -28,3 +28,14 @@ select:focus
 
     border-color:   var(--color-font);
 }
+
+select:active option
+{
+    background:     var(--color-background);
+    color:          var(--color-font);
+}
+
+select:active option:checked
+{
+    color:          var(--color-mark);;
+}
