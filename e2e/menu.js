@@ -3,12 +3,35 @@
  *  @author     Pawel Kuznik <pawel.kuznik@gmail.com>
  */
 
-describe("Check menu", function() {
+describe("Main menu", function() {
 
-    it('Should contain important links', (browser) => {
+    before(function(browser, done) {
 
-        browser
-            .url('http://localhost:8080')
-            .expect.element('body > nav').to.be.present.before(200);
+        // navigate to the page
+        browser.url('http://localhost:8080', () => done());
+    });
+
+    after(function(browser, done) {
+
+        // end session
+        browser.end(() => done());
+    });
+
+    it('should be visible from the start', browser => {
+
+        // check if the navigation is there
+        browser.expect.element('body > nav').to.be.present;
+    });
+
+    it('should contain link to home page', browser => {
+
+        // check if it contains homepage link
+        browser.expect.element('body > nav [href="/#/"]').to.be.present;
+    });
+
+    it('Should contain link to squad templates page', (browser) => {
+
+        // check if it contains squad templates link
+        browser.expect.element('body > nav [href="/#/squads"]').to.be.present;
     });
 });
