@@ -2,3 +2,4 @@ node_modules
 **.swp
 client/script.js
 package-lock.json
+chromedriver.log
