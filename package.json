@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node_modules/.bin/http-server client",
-    "test": "node_modules/.bin/nightwatch",
+    "test:e2e": "node_modules/.bin/nightwatch", 
+    "test:unit": "node_modules/.bin/mocha tests",
     "build": "browserify src/main.js > client/script.js"
   },
   "author": "",
@@ -17,8 +18,10 @@
     "waystone": "github:pawel-kuznik/waystone"
   },
   "devDependencies": {
+    "chai": "^4.2.0",
     "chromedriver": "^75.1.0",
     "http-server": "^0.11.1",
+    "mocha": "^6.2.0",
     "nightwatch": "^1.1.13"
   }
 }

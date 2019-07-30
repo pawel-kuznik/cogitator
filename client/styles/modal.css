@@ -1,0 +1,19 @@
+/**
+ *  The styles for the modal.
+ */
+
+.modal
+{
+    display:    none;
+
+
+    position:   fixed;
+    
+    background: var(--color-background);
+    color:      var(--color-font);
+}
+
+.modal.shown
+{
+    display:    block;       
+}
