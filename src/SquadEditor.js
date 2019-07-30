@@ -46,6 +46,9 @@ module.exports = class extends Component {
 
                 // flush the changes
                 squad.root.flush();
+
+                // go to the list of squads
+                window.location.hash = '#/squads';
             });
             
             // install handling on the delete button
@@ -56,6 +59,9 @@ module.exports = class extends Component {
 
                 // flush the changes
                 squad.root.flush();
+
+                // go to the list of squads
+                window.location.hash = '#/squads';
             });
 
             // get the content
