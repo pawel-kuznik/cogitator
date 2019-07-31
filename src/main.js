@@ -11,6 +11,9 @@ const Container         = require('sparkle').Container;
 const TemplateStore     = require('408k').TemplateStore;
 const WebLocalStorage   = require('pocketdata').LocalWebStorage;
 
+// set the function
+window.Cogitator = { };
+
 /**
  *  Start the application.
  */
