@@ -4,10 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node_modules/.bin/http-server client",
-    "test:e2e": "node_modules/.bin/nightwatch", 
-    "test:unit": "node_modules/.bin/mocha tests",
-    "build": "browserify src/main.js > client/script.js"
+    "start":        "node_modules/.bin/http-server -p 8080 client",
+    "test:e2e":     "node_modules/.bin/nightwatch", 
+    "test:unit":    "node_modules/.bin/http-server -p 9090 .",
+    "build":        "browserify src/main.js > client/script.js",
+    "build:tests":  "browserify tests/main.js > tests.js",
+    "build:all":    "npm run build:tests && npm run build"
   },
   "author": "",
   "license": "ISC",

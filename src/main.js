@@ -11,40 +11,45 @@ const Container         = require('sparkle').Container;
 const TemplateStore     = require('408k').TemplateStore;
 const WebLocalStorage   = require('pocketdata').LocalWebStorage;
 
-// the template store
-const templateStore = new TemplateStore(new WebLocalStorage('templates'));
+/**
+ *  Start the application.
+ */
+window.Cogitator.start = function () {
 
-// install on document loaded event
-document.addEventListener('DOMContentLoaded', () => {
+    // the template store
+    const templateStore = new TemplateStore(new WebLocalStorage('templates'));
 
-    // tell that the application starts
-    console.info('starting application');
+    // install on document loaded event
+    document.addEventListener('DOMContentLoaded', () => {
 
-    // construct a router
-    const router = new Router();
+        // tell that the application starts
+        console.info('starting application');
 
-    // construct the main container
-    const container = new Container();
+        // construct a router
+        const router = new Router();
 
-    // append the container to the body
-    container.appendTo(document.querySelector('body'));
+        // construct the main container
+        const container = new Container();
 
-    // define all routes
-    router.append('/squads',            () => { container.install(require('./Squads.js'), templateStore); });
-    router.append('/create-squad',      () => { container.install(require('./SquadEditor.js'), templateStore.buildSquad()); });
-    router.append('/squads/:id',        params => { container.install(require('./SquadEditor.js'), templateStore.fetchSquad(params.id)); });
-    
-    // the function to resolve the router with current path
-    const resolve = () => { router.resolve(window.location.hash.substring(1)); };
+        // append the container to the body
+        container.appendTo(document.querySelector('body'));
 
-    // when the data is loaded we can continue
-    templateStore.reload().then(() => {
+        // define all routes
+        router.append('/squads',            () => { container.install(require('./Squads.js'), templateStore); });
+        router.append('/create-squad',      () => { container.install(require('./SquadEditor.js'), templateStore.buildSquad()); });
+        router.append('/squads/:id',        params => { container.install(require('./SquadEditor.js'), templateStore.fetchSquad(params.id)); });
+        
+        // the function to resolve the router with current path
+        const resolve = () => { router.resolve(window.location.hash.substring(1)); };
 
-        // resolve the path
-        resolve();
+        // when the data is loaded we can continue
+        templateStore.reload().then(() => {
 
-        // make sure the path changes the current component
-        window.addEventListener('hashchange', () => { resolve(); });
+            // resolve the path
+            resolve();
+
+            // make sure the path changes the current component
+            window.addEventListener('hashchange', () => { resolve(); });
+        });
     });
-});
-
+};
