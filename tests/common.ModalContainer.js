@@ -3,18 +3,18 @@
  */
 
 // the dependencies
-const expect    = require('chai').expect;
-const Component = require('sparkle').Component;
-const Modal     = require('../src/Modal.js');
+const expect            = require('chai').expect;
+const Component         = require('sparkle').Component;
+const ModalContainer    = require('../src/common/ModalContainer.js');
 
-describe('Modal', () => {
+describe('common.ModalContainer', () => {
 
     describe('.component', () => {
 
         it('should expose a component mounted in the constructor', () => {
 
             // construct the modal
-            const modal = new Modal(Component);
+            const modal = new ModalContainer(Component);
 
             // expect the property to expose a component
             expect(modal.component).to.be.instanceof(Component);
@@ -26,7 +26,7 @@ describe('Modal', () => {
         it('should initially return false cause the modal is not shown', () => {
 
             // construct the modal
-            const modal = new Modal(Component);
+            const modal = new ModalContainer(Component);
 
             // check if it's not shown
             expect(modal.shown).to.be.false;
@@ -35,7 +35,7 @@ describe('Modal', () => {
         it('should tell true after we call .show()', () => {
 
             // construct the modal
-            const modal = new Modal(Component);
+            const modal = new ModalContainer(Component);
 
             // show the modal
             modal.show();
@@ -47,7 +47,7 @@ describe('Modal', () => {
         it('should tell false after we call .hide()', () => {
 
             // construct the modal
-            const modal = new Modal(Component);
+            const modal = new ModalContainer(Component);
 
             // show the modal
             modal.show();

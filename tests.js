@@ -12340,7 +12340,7 @@ module.exports = {
 };
 
 },{"./lib/Component.js":42,"./lib/Container.js":43,"./lib/Form.js":45,"./lib/List.js":46,"./lib/form.js":48,"./lib/object.js":51}],56:[function(require,module,exports){
-/**
+ /**
  *  This is a modal. A modal class is a class that gives an actual component
  *  a special place on the screen.
  *
@@ -12349,7 +12349,6 @@ module.exports = {
 
 // the symbols of private things
 const elem      = Symbol('elem');
-const component = Symbol('component');
 
 // export the class
 module.exports = class {
@@ -12364,25 +12363,21 @@ module.exports = class {
         // the element of the modal
         this[elem] = document.createElement('DIV');
         this[elem].classList.add('modal');
-
-        // create the component
-        this[component] = new Widget(...args);
-
-        // append the component to the element
-        this[component].appendTo(this[elem]);
     }
 
     /**
-     *  Get access to the component installed in the modal
+     *  Get access to the element.
+     *  @return HTMLElement
      */
-    get component() {
+    get elem() {
 
-        // return the component
-        return this[component];
+        // return the element
+        return this[elem];
     }
 
     /**
      *  Is the modal shown to the user?
+     *  @return boolean
      */
     get shown() {
 
@@ -12413,9 +12408,6 @@ module.exports = class {
      */
     remove() {
 
-        // remove the component
-        this[component].remove();
-
         // remove the element
         this[elem].remove();
     }
@@ -12423,43 +12415,124 @@ module.exports = class {
 
 },{}],57:[function(require,module,exports){
 /**
+ *  This is a modal. A modal class is a class that gives an actual component
+ *  a special place on the screen.
+ *
+ *  @author     Pawel Kuznik <pawel.kuznik@gmail.com>
+ */
+
+// the dependencies
+const Container = require('sparkle').Container;
+const Modal     = require('./Modal.js');
+
+// the symbols of private things
+const container = Symbol('container');
+const modal     = Symbol('modal');
+
+// export the class
+module.exports = class {
+
+    /**
+     *  The constructor.
+     *  @param      Component the actual component to mount inside.
+     *  @variadic   The parameters to pass to the constructor of the component.
+     */
+    constructor(Widget, ...args) {
+
+        // construct the modal
+        this[modal] = new Modal();
+
+        // install a container inside the modal element
+        this[container] = new Container({ elem: this[modal].elem });
+
+        // do we have a widget to install
+        if (Widget) this[container].install(Widget, ...args);
+    }
+
+    /**
+     *  Get access to the component installed in the modal
+     */
+    get component() {
+
+        // return the installed component
+        return this[container].current;
+    }
+
+    /**
+     *  Is the modal shown to the user?
+     */
+    get shown() {
+
+        // rely on the modal to tell this
+        return this[modal].shown;
+    }
+
+    /**
+     *  Show the modal to the user.
+     */
+    show() {
+
+        // show the modal
+        this[modal].show();
+    }
+
+    /**
+     *  Hide the modal from the user.
+     */
+    hide() {
+
+        // hide the modal
+        this[modal].hide();
+    }
+
+    /**
+     *  Remove the modal.
+     */
+    remove() {
+
+        // remove the container
+        this[container].remove();
+        
+        // remove the modal
+        this[modal].remove();
+    }
+};
+
+},{"./Modal.js":56,"sparkle":55}],58:[function(require,module,exports){
+/**
  *  Test case for Modal class.
  */
 
 // the dependencies
 const expect    = require('chai').expect;
-const Component = require('sparkle').Component;
-const Modal     = require('../src/Modal.js');
+const Modal     = require('../src/common/Modal.js');
 
-describe('Modal', () => {
-
-    describe('.component', () => {
-
-        it('should expose a component mounted in the constructor', () => {
-
-            // construct the modal
-            const modal = new Modal(Component);
-
-            // expect the property to expose a component
-            expect(modal.component).to.be.instanceof(Component);
-        });
-    });
+describe('common.Modal', () => {
 
     describe('.shown', () => {
 
         it('should initially return false cause the modal is not shown', () => {
 
             // construct the modal
-            const modal = new Modal(Component);
+            const modal = new Modal();
 
             // check if it's not shown
             expect(modal.shown).to.be.false;
         });
 
+        it('should expose the element', () => {
+
+            // construct the modal
+            const modal = new Modal();
+
+            // check if it's object
+            expect(modal.elem).to.be.instanceof(HTMLElement);
+        });
+
         it('should tell true after we call .show()', () => {
 
             // construct the modal
-            const modal = new Modal(Component);
+            const modal = new Modal();
 
             // show the modal
             modal.show();
@@ -12471,7 +12544,7 @@ describe('Modal', () => {
         it('should tell false after we call .hide()', () => {
 
             // construct the modal
-            const modal = new Modal(Component);
+            const modal = new Modal();
 
             // show the modal
             modal.show();
@@ -12485,9 +12558,80 @@ describe('Modal', () => {
     });
 });
 
-},{"../src/Modal.js":56,"chai":2,"sparkle":55}],58:[function(require,module,exports){
+},{"../src/common/Modal.js":56,"chai":2}],59:[function(require,module,exports){
+/**
+ *  Test case for Modal class.
+ */
 
+// the dependencies
+const expect            = require('chai').expect;
+const Component         = require('sparkle').Component;
+const ModalContainer    = require('../src/common/ModalContainer.js');
 
-require('./Modal.js');
+describe('common.ModalContainer', () => {
 
-},{"./Modal.js":57}]},{},[58]);
+    describe('.component', () => {
+
+        it('should expose a component mounted in the constructor', () => {
+
+            // construct the modal
+            const modal = new ModalContainer(Component);
+
+            // expect the property to expose a component
+            expect(modal.component).to.be.instanceof(Component);
+        });
+    });
+
+    describe('.shown', () => {
+
+        it('should initially return false cause the modal is not shown', () => {
+
+            // construct the modal
+            const modal = new ModalContainer(Component);
+
+            // check if it's not shown
+            expect(modal.shown).to.be.false;
+        });
+
+        it('should tell true after we call .show()', () => {
+
+            // construct the modal
+            const modal = new ModalContainer(Component);
+
+            // show the modal
+            modal.show();
+
+            // check if it's not shown
+            expect(modal.shown).to.be.true;
+        });
+
+        it('should tell false after we call .hide()', () => {
+
+            // construct the modal
+            const modal = new ModalContainer(Component);
+
+            // show the modal
+            modal.show();
+
+            // hide the modal
+            modal.hide();
+
+            // check if it's not shown
+            expect(modal.shown).to.be.false;
+        });
+    });
+});
+
+},{"../src/common/ModalContainer.js":57,"chai":2,"sparkle":55}],60:[function(require,module,exports){
+/**
+ *  This is a kickstart file for the tests. We have it like this cause we want
+ *  to use our regular environment (commonjs modules compiled with browserify).
+ *  To achieve this we need to compile tests just like we would compile the
+ *  actual application.
+ */
+
+// require all tests
+require('./common.Modal.js');
+require('./common.ModalContainer.js');
+
+},{"./common.Modal.js":58,"./common.ModalContainer.js":59}]},{},[60]);

@@ -6,4 +6,5 @@
  */
 
 // require all tests
-require('./Modal.js');
+require('./common.Modal.js');
+require('./common.ModalContainer.js');

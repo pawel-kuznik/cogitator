@@ -1,4 +1,4 @@
-/**
+ /**
  *  This is a modal. A modal class is a class that gives an actual component
  *  a special place on the screen.
  *
@@ -7,7 +7,6 @@
 
 // the symbols of private things
 const elem      = Symbol('elem');
-const component = Symbol('component');
 
 // export the class
 module.exports = class {
@@ -22,25 +21,21 @@ module.exports = class {
         // the element of the modal
         this[elem] = document.createElement('DIV');
         this[elem].classList.add('modal');
-
-        // create the component
-        this[component] = new Widget(...args);
-
-        // append the component to the element
-        this[component].appendTo(this[elem]);
     }
 
     /**
-     *  Get access to the component installed in the modal
+     *  Get access to the element.
+     *  @return HTMLElement
      */
-    get component() {
+    get elem() {
 
-        // return the component
-        return this[component];
+        // return the element
+        return this[elem];
     }
 
     /**
      *  Is the modal shown to the user?
+     *  @return boolean
      */
     get shown() {
 
@@ -70,9 +65,6 @@ module.exports = class {
      *  Remove the modal.
      */
     remove() {
-
-        // remove the component
-        this[component].remove();
 
         // remove the element
         this[elem].remove();
