@@ -4,17 +4,18 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start":        "node_modules/.bin/http-server -p 8080 client",
-    "test:e2e":     "node_modules/.bin/nightwatch", 
-    "test:unit":    "node_modules/.bin/http-server -p 9090 .",
-    "build":        "browserify src/main.js > client/script.js",
-    "build:tests":  "browserify tests/main.js > tests.js",
-    "build:all":    "npm run build:tests && npm run build"
+    "start": "node_modules/.bin/http-server -p 8080 client",
+    "test:e2e": "node_modules/.bin/nightwatch",
+    "test:unit": "node_modules/.bin/http-server -p 9090 .",
+    "build": "browserify src/main.js > client/script.js",
+    "build:tests": "browserify tests/main.js > tests.js",
+    "build:all": "npm run build:tests && npm run build"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "408k": "github:pawel-kuznik/408k",
+    "iventy": "github:pawel-kuznik/iventy",
     "pocketdata": "github:pawel-kuznik/pocketdata",
     "sparkle": "github:pawel-kuznik/sparkle",
     "waystone": "github:pawel-kuznik/waystone"

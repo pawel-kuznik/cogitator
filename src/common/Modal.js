@@ -5,32 +5,20 @@
  *  @author     Pawel Kuznik <pawel.kuznik@gmail.com>
  */
 
-// the symbols of private things
-const elem      = Symbol('elem');
+// the dependencies
+const sparkle   = require('sparkle');
+const Component = sparkle.Component;
 
 // export the class
-module.exports = class {
+module.exports = class extends Component {
 
     /**
      *  The constructor.
-     *  @param      Component the actual component to mount inside.
-     *  @variadic   The parameters to pass to the constructor of the component.
      */
-    constructor(Widget, ...args) {
+    constructor() {
 
-        // the element of the modal
-        this[elem] = document.createElement('DIV');
-        this[elem].classList.add('modal');
-    }
-
-    /**
-     *  Get access to the element.
-     *  @return HTMLElement
-     */
-    get elem() {
-
-        // return the element
-        return this[elem];
+        // call the parent
+        super({ elem: sparkle.DOM.createElement('DIV', { class: 'modal' }) });
     }
 
     /**
@@ -40,7 +28,7 @@ module.exports = class {
     get shown() {
 
         // check if the class is applied
-        return this[elem].classList.contains('shown');
+        return this.elem.classList.contains('shown');
     }
 
     /**
@@ -49,7 +37,7 @@ module.exports = class {
     show() {
 
         // add the shown class
-        this[elem].classList.add('shown');
+        this.elem.classList.add('shown');
     }
 
     /**
@@ -58,15 +46,6 @@ module.exports = class {
     hide() {
 
         // remove the shown class
-        this[elem].classList.remove('shown');
-    }
-
-    /**
-     *  Remove the modal.
-     */
-    remove() {
-
-        // remove the element
-        this[elem].remove();
+        this.elem.classList.remove('shown');
     }
 };

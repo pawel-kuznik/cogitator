@@ -11,6 +11,7 @@
 
 // the dependencies
 const Component = require('sparkle').Component;
+const Prompt    = require('./Prompt.js');
 
 // privates
 const entity    = Symbol('entity');
@@ -53,14 +54,21 @@ module.exports = class extends Component {
         // install handler for the remove button
         remove.addEventListener('click', () => {
 
-            // remove the entity from the root
-            data.root.delete(data);
+            // the ask prompt
+            const ask = Prompt.manager.show(Prompt, { question: "Confirm removal" });
 
-            // make sure changes are propagated
-            data.root.flush();
+            // if the prompt says proceed then we can remove the data
+            ask.on('proceed', () => {
 
-            // trigger deleted event
-            this.triggerer.triggerEvent('deleted');
+                // remove the entity from the root
+                data.root.delete(data);
+
+                // make sure changes are propagated
+                data.root.flush();
+
+                // trigger deleted event
+                this.triggerer.triggerEvent('deleted');
+            });
         });
     }
 

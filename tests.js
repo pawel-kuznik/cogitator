@@ -11209,42 +11209,6 @@ const adoptedRemovedHandler = Symbol('adoptedRemovedHandler');
 const Component = class extends EventHandlers.Emitter {
 
     /**
-     *  This a method that allow to compose a component class on fly. This is
-     *  usefull when creating a bunch on components that would need to have only
-     *  a template assigned or a similar options and don't need to have a full
-     *  class defined.
-     *
-     *  For the base class it's not really that useful, but it shines with forms
-     *  or lists. Anyway we keep it in the base class so any component can be
-     *  composed to a on fly class.
-     *
-     *  @param  object|function     This parameter can be an object which will
-     *                              be applied on the 1st parameter of the constructor.
-     *
-     *                              This parameter can be an function that will
-     *                              be called to get the parameters of the constructor
-     *                              and compose an object for the actual constructor.
-     *
-     *  @return Component
-     */
-    static compose(data) {
-
-        // extends the class
-        return class extends this {
-
-            // the new constructor
-            constructor(...args) {
-
-                // if the data is a function we want to call it
-                if (typeof(data) == 'function') super(data(...args));
-
-                // call the constructor with the object
-                else super(Object.assign({ }, data, args[0] ? args[0] : { }));
-            }
-        };
-    }
-
-    /**
      *  The constructor.
      *
      *  @param  object  @see the file-level docblock
@@ -11298,6 +11262,14 @@ const Component = class extends EventHandlers.Emitter {
      *  @return DOMElement
      */
     get elem () { return this[elem]; }
+
+    /**
+     *  Get access to the component's content element. This is an element that
+     *  other things can use to add more content. In many cases it's the same
+     *  element as the `.elem`, but derived components might change it.
+     *  @return DOMElement
+     */
+    get content() { return this.elem; }
 
     /**
      *  A component is a thenable object. This promise resolves when
@@ -11361,10 +11333,10 @@ const Component = class extends EventHandlers.Emitter {
     append(child) {
 
         // if we are dealing with a component we want to append the component element to our
-        if (child instanceof Component) this.elem.appendChild(child.elem);
+        if (child instanceof Component) this.content.appendChild(child.elem);
 
         // if we are dealing with an element we want to append the element like that
-        if (child instanceof Element) this.elem.appendChild(child);
+        if (child instanceof Element) this.content.appendChild(child);
 
         // allow chaining
         return this;
@@ -11378,7 +11350,7 @@ const Component = class extends EventHandlers.Emitter {
     appendTo(target) {
 
         // if we are dealing with a component we want to append our element to the component element
-        if (target instanceof Component) target.elem.appendChild(this.elem);
+        if (target instanceof Component) target.content.appendChild(this.elem);
 
         // if we are dealing with an element, we just want to append our element to it
         if (target instanceof Element) target.appendChild(this.elem);
@@ -11423,7 +11395,7 @@ const Component = class extends EventHandlers.Emitter {
 // export the class
 module.exports = Component;
 
-},{"./EventHandlers.js":44,"./Template.js":47}],43:[function(require,module,exports){
+},{"./EventHandlers.js":45,"./Template.js":48}],43:[function(require,module,exports){
 /**
  *  This is a container class that that enables mounting various components
  *  inside it.
@@ -11536,6 +11508,31 @@ module.exports = class extends Component {
 };
 
 },{"./Component.js":42}],44:[function(require,module,exports){
+/**
+ *  This is a function that allows for creating an DOM element in a very quick
+ *  and easy way.
+ *
+ *  @param  string  The tag name of the element. It should be capitalized.
+ *  @param  object  A key-value object of attributes to assign to the element.
+ *  @return Element The element to create.
+ */
+module.exports = function(tagName, attrs = { }) {
+
+    // create the element
+    const element = document.createElement(tagName);
+
+    // itarate over the attributes
+    for(let attr in attrs) {
+
+        // set the attribute
+        element.setAttribute(attr, attrs[attr]);
+    }
+
+    // return the element
+    return element;
+};
+
+},{}],45:[function(require,module,exports){
 /**
  *  This is a thin wrapper around Iventy.Emitter class that allows to be used a
  *  internal instance for the event handlers/emitters for a component.
@@ -11680,7 +11677,7 @@ module.exports = {
 };
 
 
-},{"iventy":38}],45:[function(require,module,exports){
+},{"iventy":38}],46:[function(require,module,exports){
 /**
  *  This is a form class. This class abstracts a regular HTML form element 
  *  and provides a series of methods to manager output of a form. 
@@ -11880,7 +11877,7 @@ module.exports = class extends Component {
     }
 };
 
-},{"./Component.js":42,"./form.js":48,"./object.js":51}],46:[function(require,module,exports){
+},{"./Component.js":42,"./form.js":49,"./object.js":52}],47:[function(require,module,exports){
 /**
  *  This is a class that allows to create a simple list of components. This list
  *  holds the instance of the components installed here and properly bubbles all
@@ -11955,7 +11952,7 @@ module.exports = class extends Component {
         this[components].add(component);
 
         // add the component element to the list element
-        this.elem.appendChild(component.elem);
+        this.content.appendChild(component.elem);
 
         // if the component is removed, then we want to remove it from the list also.
         component.on('removed', this[removedHandler]);
@@ -11989,7 +11986,7 @@ module.exports = class extends Component {
         try
         {
             // try to remove the child
-            this.elem.removeChild(component.elem);
+            this.content.removeChild(component.elem);
 
             // tell others that a list item was removed
             this.triggerer.triggerEvent('deleted', { item: component });
@@ -12037,7 +12034,7 @@ module.exports = class extends Component {
     }
 };
 
-},{"./Component.js":42}],47:[function(require,module,exports){
+},{"./Component.js":42}],48:[function(require,module,exports){
 /** 
  *  This is a class describing a HTML template fetched from an URL. The class is
  *  a thenable object cause it manages data fetched from a server under a specific
@@ -12129,7 +12126,7 @@ module.exports = class {
     }
 };
 
-},{}],48:[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 /**
  *  This is a class that holds the interface for the form module
  *
@@ -12142,7 +12139,7 @@ module.exports = {
     toJSON:     require('./form/toJSON.js')
 };
 
-},{"./form/fromJSON.js":49,"./form/toJSON.js":50}],49:[function(require,module,exports){
+},{"./form/fromJSON.js":50,"./form/toJSON.js":51}],50:[function(require,module,exports){
 /**
  *  This is a helper function to fill a form element with data from a JSON object.
  *  The JSON object should be a KEY-VALUE representation of the inputs in the form.
@@ -12171,7 +12168,7 @@ module.exports = function (form, data) {
     }
 };
 
-},{}],50:[function(require,module,exports){
+},{}],51:[function(require,module,exports){
 /**
  *  This is a function that allows to cast a form element to a JSON object.
  *  This function is primarly intended to create a REST API friendly representation
@@ -12201,7 +12198,7 @@ module.exports = function(element) {
     return parsed;
 };
 
-},{}],51:[function(require,module,exports){
+},{}],52:[function(require,module,exports){
 /**
  *  A file to expose the interface of object module.
  *
@@ -12215,7 +12212,7 @@ module.exports = {
     deflate:    require('./object/deflate.js')
 };
 
-},{"./object/deflate.js":52,"./object/get.js":53,"./object/set.js":54}],52:[function(require,module,exports){
+},{"./object/deflate.js":53,"./object/get.js":54,"./object/set.js":55}],53:[function(require,module,exports){
 /**
  *  @author     Paweł Kuźnik <pawel.kuznink@gmail.com>
  */
@@ -12257,7 +12254,7 @@ module.exports = function(object) {
     return scanObject(object);
 };
 
-},{}],53:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
 /**
  *  This is a function that allow to access a certain property in an object by
  *  a string of keys separated by a dot. An accessor string.
@@ -12289,7 +12286,7 @@ module.exports = function (object, accessor) {
     return object;
 };
 
-},{}],54:[function(require,module,exports){
+},{}],55:[function(require,module,exports){
 /**
  *  This is a function that allows setting a property on an object.
  *
@@ -12322,7 +12319,7 @@ module.exports = function(object, accessor, value) {
     object[last] = value;
 };
 
-},{}],55:[function(require,module,exports){
+},{}],56:[function(require,module,exports){
 /**
  *  This is a file that exports the public interface of the library.
  *
@@ -12336,10 +12333,11 @@ module.exports = {
     Form:       require('./lib/Form.js'),
     List:       require('./lib/List.js'),
     form:       require('./lib/form.js'),
-    object:     require('./lib/object.js')
+    object:     require('./lib/object.js'),
+    DOM:        { createElement: require('./lib/DOM/createElement.js') }
 };
 
-},{"./lib/Component.js":42,"./lib/Container.js":43,"./lib/Form.js":45,"./lib/List.js":46,"./lib/form.js":48,"./lib/object.js":51}],56:[function(require,module,exports){
+},{"./lib/Component.js":42,"./lib/Container.js":43,"./lib/DOM/createElement.js":44,"./lib/Form.js":46,"./lib/List.js":47,"./lib/form.js":49,"./lib/object.js":52}],57:[function(require,module,exports){
  /**
  *  This is a modal. A modal class is a class that gives an actual component
  *  a special place on the screen.
@@ -12347,32 +12345,20 @@ module.exports = {
  *  @author     Pawel Kuznik <pawel.kuznik@gmail.com>
  */
 
-// the symbols of private things
-const elem      = Symbol('elem');
+// the dependencies
+const sparkle   = require('sparkle');
+const Component = sparkle.Component;
 
 // export the class
-module.exports = class {
+module.exports = class extends Component {
 
     /**
      *  The constructor.
-     *  @param      Component the actual component to mount inside.
-     *  @variadic   The parameters to pass to the constructor of the component.
      */
-    constructor(Widget, ...args) {
+    constructor() {
 
-        // the element of the modal
-        this[elem] = document.createElement('DIV');
-        this[elem].classList.add('modal');
-    }
-
-    /**
-     *  Get access to the element.
-     *  @return HTMLElement
-     */
-    get elem() {
-
-        // return the element
-        return this[elem];
+        // call the parent
+        super({ elem: sparkle.DOM.createElement('DIV', { class: 'modal' }) });
     }
 
     /**
@@ -12382,7 +12368,7 @@ module.exports = class {
     get shown() {
 
         // check if the class is applied
-        return this[elem].classList.contains('shown');
+        return this.elem.classList.contains('shown');
     }
 
     /**
@@ -12391,7 +12377,7 @@ module.exports = class {
     show() {
 
         // add the shown class
-        this[elem].classList.add('shown');
+        this.elem.classList.add('shown');
     }
 
     /**
@@ -12400,20 +12386,11 @@ module.exports = class {
     hide() {
 
         // remove the shown class
-        this[elem].classList.remove('shown');
-    }
-
-    /**
-     *  Remove the modal.
-     */
-    remove() {
-
-        // remove the element
-        this[elem].remove();
+        this.elem.classList.remove('shown');
     }
 };
 
-},{}],57:[function(require,module,exports){
+},{"sparkle":56}],58:[function(require,module,exports){
 /**
  *  This is a modal. A modal class is a class that gives an actual component
  *  a special place on the screen.
@@ -12498,7 +12475,103 @@ module.exports = class {
     }
 };
 
-},{"./Modal.js":56,"sparkle":55}],58:[function(require,module,exports){
+},{"./Modal.js":57,"sparkle":56}],59:[function(require,module,exports){
+/**
+ *  This a class that allows creating modals in a manged way.
+ */
+
+// privates
+const elem      = Symbol('elem');
+const modals    = Symbol('modals');
+
+// export the manager
+module.exports = class {
+
+    /**
+     *  The constructor.
+     */
+    constructor() {
+
+        // create the element
+        this[elem] = document.createElement('DIV');
+        this[elem].classList.add('modalmanager');
+
+        // append the element to the document body
+        document.body.appendChild(this[elem]);
+
+        // the modals
+        this[modals] = [];
+    }
+
+    /**
+     *  The number of modals installed inside this manager.
+     *  @return int
+     */
+    get size() {
+
+        // return the length of the modals array
+        return this[modals].length;
+    }
+
+    /**
+     *  Add a new modal instance to the manager.
+     */
+    add(Modal, ...args) {
+
+        // construct the new modal
+        const modal = new Modal(...args);
+
+        // push the modal
+        this[modals].push(modal);
+
+        // return the modal
+        return modal;
+    }
+
+    /**
+     *  Add a new modal and automatically show it.
+     */
+    show(Modal, ...args) {
+
+        // construct new modal
+        const modal = this.add(Modal, ...args);
+
+        // show the modal
+        modal.show(); 
+
+        // return the modal
+        return modal;
+    }
+
+    /**
+     *  Clear the current state of the modals.
+     */
+    clear() {
+
+        // close all modals
+        for (let modal of this[modals].reverse()) modal.remove();
+
+        // drop references
+        this[modals].length = 0;
+
+        // allow chaining
+        return this;
+    }
+
+    /**
+     *  Remove the manager
+     */
+    remove() {
+
+        // clear all of the modals
+        this.clear();
+
+        // and remove the element
+        this[elem].remove();
+    }
+};
+
+},{}],60:[function(require,module,exports){
 /**
  *  Test case for Modal class.
  */
@@ -12558,7 +12631,7 @@ describe('common.Modal', () => {
     });
 });
 
-},{"../src/common/Modal.js":56,"chai":2}],59:[function(require,module,exports){
+},{"../src/common/Modal.js":57,"chai":2}],61:[function(require,module,exports){
 /**
  *  Test case for Modal class.
  */
@@ -12622,7 +12695,65 @@ describe('common.ModalContainer', () => {
     });
 });
 
-},{"../src/common/ModalContainer.js":57,"chai":2,"sparkle":55}],60:[function(require,module,exports){
+},{"../src/common/ModalContainer.js":58,"chai":2,"sparkle":56}],62:[function(require,module,exports){
+/**
+ *  Test case for common.ModalManager class.
+ */
+
+// the dependencies
+const expect        = require('chai').expect;
+const ModalManager  = require('../src/common/ModalManager.js');
+const Modal         = require('../src/common/Modal.js');
+
+describe('common.ModalManager', () => {
+
+    describe('.add()', () => {
+
+        it('should create a new modal', () => {
+
+            // construct the manager
+            const manager = new ModalManager();
+
+            // add a modal
+            const modal = manager.add(Modal);
+
+            // expect a modal
+            expect(modal).to.be.instanceof(Modal);
+        });
+
+        it('should increased the size of the manager', () => {
+
+            // construct the manager
+            const manager = new ModalManager();
+
+            // add a modal
+            manager.add(Modal);
+
+            // expect a modal
+            expect(manager.size).to.be.equal(1);
+        });
+    });
+
+    describe('.clear()', () => {
+
+        it('should render the size 0', () => {
+
+            // construct the manager
+            const manager = new ModalManager();
+
+            // add a modal
+            manager.add(Modal);
+
+            // clear all modals
+            manager.clear();
+
+            // expect a modal
+            expect(manager.size).to.be.equal(0);
+        });
+    });
+});
+
+},{"../src/common/Modal.js":57,"../src/common/ModalManager.js":59,"chai":2}],63:[function(require,module,exports){
 /**
  *  This is a kickstart file for the tests. We have it like this cause we want
  *  to use our regular environment (commonjs modules compiled with browserify).
@@ -12633,5 +12764,6 @@ describe('common.ModalContainer', () => {
 // require all tests
 require('./common.Modal.js');
 require('./common.ModalContainer.js');
+require('./common.ModalManager.js');
 
-},{"./common.Modal.js":58,"./common.ModalContainer.js":59}]},{},[60]);
+},{"./common.Modal.js":60,"./common.ModalContainer.js":61,"./common.ModalManager.js":62}]},{},[63]);
