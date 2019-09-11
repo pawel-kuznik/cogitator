@@ -1,4 +1,4 @@
-(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 /*!
  * assertion-error
  * Copyright(c) 2013 Jake Luer <jake@qualiancy.com>
@@ -8112,7 +8112,7 @@ module.exports = function expectTypes(obj, types) {
   }
 };
 
-},{"./flag":16,"assertion-error":1,"type-detect":35}],16:[function(require,module,exports){
+},{"./flag":16,"assertion-error":1,"type-detect":56}],16:[function(require,module,exports){
 /*!
  * Chai - flag utility
  * Copyright(c) 2012-2014 Jake Luer <jake@alogicalparadox.com>
@@ -8521,7 +8521,7 @@ exports.isProxyEnabled = require('./isProxyEnabled');
 
 exports.isNaN = require('./isNaN');
 
-},{"./addChainableMethod":10,"./addLengthGuard":11,"./addMethod":12,"./addProperty":13,"./compareByInspect":14,"./expectTypes":15,"./flag":16,"./getActual":17,"./getMessage":19,"./getOwnEnumerableProperties":20,"./getOwnEnumerablePropertySymbols":21,"./inspect":24,"./isNaN":25,"./isProxyEnabled":26,"./objDisplay":27,"./overwriteChainableMethod":28,"./overwriteMethod":29,"./overwriteProperty":30,"./proxify":31,"./test":32,"./transferFlags":33,"check-error":36,"deep-eql":34,"get-func-name":37,"pathval":41,"type-detect":35}],24:[function(require,module,exports){
+},{"./addChainableMethod":10,"./addLengthGuard":11,"./addMethod":12,"./addProperty":13,"./compareByInspect":14,"./expectTypes":15,"./flag":16,"./getActual":17,"./getMessage":19,"./getOwnEnumerableProperties":20,"./getOwnEnumerablePropertySymbols":21,"./inspect":24,"./isNaN":25,"./isProxyEnabled":26,"./objDisplay":27,"./overwriteChainableMethod":28,"./overwriteMethod":29,"./overwriteProperty":30,"./proxify":31,"./test":32,"./transferFlags":33,"check-error":34,"deep-eql":35,"get-func-name":36,"pathval":40,"type-detect":56}],24:[function(require,module,exports){
 // This is (almost) directly from Node.js utils
 // https://github.com/joyent/node/blob/f8c335d0caf47f16d31413f89aa28eda3878e3aa/lib/util.js
 
@@ -8899,7 +8899,7 @@ function objectToString(o) {
   return Object.prototype.toString.call(o);
 }
 
-},{"../config":5,"./getEnumerableProperties":18,"./getProperties":22,"get-func-name":37}],25:[function(require,module,exports){
+},{"../config":5,"./getEnumerableProperties":18,"./getProperties":22,"get-func-name":36}],25:[function(require,module,exports){
 /*!
  * Chai - isNaN utility
  * Copyright(c) 2012-2015 Sakthipriyan Vairamani <thechargingvolcano@gmail.com>
@@ -9492,6 +9492,180 @@ module.exports = function transferFlags(assertion, object, includeAll) {
 
 },{}],34:[function(require,module,exports){
 'use strict';
+
+/* !
+ * Chai - checkError utility
+ * Copyright(c) 2012-2016 Jake Luer <jake@alogicalparadox.com>
+ * MIT Licensed
+ */
+
+/**
+ * ### .checkError
+ *
+ * Checks that an error conforms to a given set of criteria and/or retrieves information about it.
+ *
+ * @api public
+ */
+
+/**
+ * ### .compatibleInstance(thrown, errorLike)
+ *
+ * Checks if two instances are compatible (strict equal).
+ * Returns false if errorLike is not an instance of Error, because instances
+ * can only be compatible if they're both error instances.
+ *
+ * @name compatibleInstance
+ * @param {Error} thrown error
+ * @param {Error|ErrorConstructor} errorLike object to compare against
+ * @namespace Utils
+ * @api public
+ */
+
+function compatibleInstance(thrown, errorLike) {
+  return errorLike instanceof Error && thrown === errorLike;
+}
+
+/**
+ * ### .compatibleConstructor(thrown, errorLike)
+ *
+ * Checks if two constructors are compatible.
+ * This function can receive either an error constructor or
+ * an error instance as the `errorLike` argument.
+ * Constructors are compatible if they're the same or if one is
+ * an instance of another.
+ *
+ * @name compatibleConstructor
+ * @param {Error} thrown error
+ * @param {Error|ErrorConstructor} errorLike object to compare against
+ * @namespace Utils
+ * @api public
+ */
+
+function compatibleConstructor(thrown, errorLike) {
+  if (errorLike instanceof Error) {
+    // If `errorLike` is an instance of any error we compare their constructors
+    return thrown.constructor === errorLike.constructor || thrown instanceof errorLike.constructor;
+  } else if (errorLike.prototype instanceof Error || errorLike === Error) {
+    // If `errorLike` is a constructor that inherits from Error, we compare `thrown` to `errorLike` directly
+    return thrown.constructor === errorLike || thrown instanceof errorLike;
+  }
+
+  return false;
+}
+
+/**
+ * ### .compatibleMessage(thrown, errMatcher)
+ *
+ * Checks if an error's message is compatible with a matcher (String or RegExp).
+ * If the message contains the String or passes the RegExp test,
+ * it is considered compatible.
+ *
+ * @name compatibleMessage
+ * @param {Error} thrown error
+ * @param {String|RegExp} errMatcher to look for into the message
+ * @namespace Utils
+ * @api public
+ */
+
+function compatibleMessage(thrown, errMatcher) {
+  var comparisonString = typeof thrown === 'string' ? thrown : thrown.message;
+  if (errMatcher instanceof RegExp) {
+    return errMatcher.test(comparisonString);
+  } else if (typeof errMatcher === 'string') {
+    return comparisonString.indexOf(errMatcher) !== -1; // eslint-disable-line no-magic-numbers
+  }
+
+  return false;
+}
+
+/**
+ * ### .getFunctionName(constructorFn)
+ *
+ * Returns the name of a function.
+ * This also includes a polyfill function if `constructorFn.name` is not defined.
+ *
+ * @name getFunctionName
+ * @param {Function} constructorFn
+ * @namespace Utils
+ * @api private
+ */
+
+var functionNameMatch = /\s*function(?:\s|\s*\/\*[^(?:*\/)]+\*\/\s*)*([^\(\/]+)/;
+function getFunctionName(constructorFn) {
+  var name = '';
+  if (typeof constructorFn.name === 'undefined') {
+    // Here we run a polyfill if constructorFn.name is not defined
+    var match = String(constructorFn).match(functionNameMatch);
+    if (match) {
+      name = match[1];
+    }
+  } else {
+    name = constructorFn.name;
+  }
+
+  return name;
+}
+
+/**
+ * ### .getConstructorName(errorLike)
+ *
+ * Gets the constructor name for an Error instance or constructor itself.
+ *
+ * @name getConstructorName
+ * @param {Error|ErrorConstructor} errorLike
+ * @namespace Utils
+ * @api public
+ */
+
+function getConstructorName(errorLike) {
+  var constructorName = errorLike;
+  if (errorLike instanceof Error) {
+    constructorName = getFunctionName(errorLike.constructor);
+  } else if (typeof errorLike === 'function') {
+    // If `err` is not an instance of Error it is an error constructor itself or another function.
+    // If we've got a common function we get its name, otherwise we may need to create a new instance
+    // of the error just in case it's a poorly-constructed error. Please see chaijs/chai/issues/45 to know more.
+    constructorName = getFunctionName(errorLike).trim() ||
+        getFunctionName(new errorLike()); // eslint-disable-line new-cap
+  }
+
+  return constructorName;
+}
+
+/**
+ * ### .getMessage(errorLike)
+ *
+ * Gets the error message from an error.
+ * If `err` is a String itself, we return it.
+ * If the error has no message, we return an empty string.
+ *
+ * @name getMessage
+ * @param {Error|String} errorLike
+ * @namespace Utils
+ * @api public
+ */
+
+function getMessage(errorLike) {
+  var msg = '';
+  if (errorLike && errorLike.message) {
+    msg = errorLike.message;
+  } else if (typeof errorLike === 'string') {
+    msg = errorLike;
+  }
+
+  return msg;
+}
+
+module.exports = {
+  compatibleInstance: compatibleInstance,
+  compatibleConstructor: compatibleConstructor,
+  compatibleMessage: compatibleMessage,
+  getMessage: getMessage,
+  getConstructorName: getConstructorName,
+};
+
+},{}],35:[function(require,module,exports){
+'use strict';
 /* globals Symbol: false, Uint8Array: false, WeakMap: false */
 /*!
  * deep-eql
@@ -9947,7 +10121,1831 @@ function isPrimitive(value) {
   return value === null || typeof value !== 'object';
 }
 
-},{"type-detect":35}],35:[function(require,module,exports){
+},{"type-detect":56}],36:[function(require,module,exports){
+'use strict';
+
+/* !
+ * Chai - getFuncName utility
+ * Copyright(c) 2012-2016 Jake Luer <jake@alogicalparadox.com>
+ * MIT Licensed
+ */
+
+/**
+ * ### .getFuncName(constructorFn)
+ *
+ * Returns the name of a function.
+ * When a non-function instance is passed, returns `null`.
+ * This also includes a polyfill function if `aFunc.name` is not defined.
+ *
+ * @name getFuncName
+ * @param {Function} funct
+ * @namespace Utils
+ * @api public
+ */
+
+var toString = Function.prototype.toString;
+var functionNameMatch = /\s*function(?:\s|\s*\/\*[^(?:*\/)]+\*\/\s*)*([^\s\(\/]+)/;
+function getFuncName(aFunc) {
+  if (typeof aFunc !== 'function') {
+    return null;
+  }
+
+  var name = '';
+  if (typeof Function.prototype.name === 'undefined' && typeof aFunc.name === 'undefined') {
+    // Here we run a polyfill if Function does not support the `name` property and if aFunc.name is not defined
+    var match = toString.call(aFunc).match(functionNameMatch);
+    if (match) {
+      name = match[1];
+    }
+  } else {
+    // If we've got a `name` property we just use it
+    name = aFunc.name;
+  }
+
+  return name;
+}
+
+module.exports = getFuncName;
+
+},{}],37:[function(require,module,exports){
+
+// expose the Iventy system
+module.exports = {
+    Emitter: require('./lib/Emitter'),
+    Event: require('./lib/Event')
+};
+
+},{"./lib/Emitter":38,"./lib/Event":39}],38:[function(require,module,exports){
+/**
+ *  A class that can be used as event emitter on client and server side. An
+ *  event emitter allows to register a number of callbacks that should be
+ *  triggered when an event on specific channel is triggered. It's possible
+ *  to distinguish channels by names.
+ *
+ *  @author     Paweł Kuźnik <pawel.kuznik@gmail.com>
+ */
+
+// the dependencies
+const Event = require('./Event.js');
+
+// the private symbols
+const channels = Symbol('channels');
+const bubbleTo = Symbol('bubbleTo');
+
+// export the class
+module.exports = class {
+
+    /**
+     *  The constructor
+     */
+    constructor () {
+
+        /**
+         *  A map container arrays of callbacks per callback channel.
+         *  @var    Map
+         */
+        this[channels] = new Map();
+
+        /**
+         *  An event emitter to which all events should be propagated.
+         *  @var    Emitter
+         */
+        this[bubbleTo] = null;
+    }
+
+    /**
+     *  Trigger event on the emitter.
+     *
+     *  @param  Iventy.Event    The event instance that should be triggered.
+     *  @return Iventy.Emitter  The emitter that the event was called on.
+     */
+    trigger (event) {
+
+        // od we have callbacks for the event channel?
+        if (this[channels].has(event.type)) {
+
+            // iterate over the callbacks and call them one by one
+            for(let callback of this[channels].get(event.type)) callback(event);
+        }
+
+        // should we bubble the event further? but only when it was not stopped
+        if (this[bubbleTo] && !event.isStopped) this[bubbleTo].trigger(event);
+
+        // allow chaining
+        return this;
+    };
+
+    /**
+     *  Install callback on given channel.
+     *
+     *  @param  string      The channel name.
+     *  @param  function    The callback to call when the event is triggered
+     */
+    on(name, callback) {
+
+        // ensure that we have registered the channel name
+        if (!this[channels].has(name)) this[channels].set(name, []);
+
+        // push next callback on the
+        this[channels].get(name).push(callback);
+
+        // allow chaining
+        return this;
+    }
+
+    /**
+     *  Uninstall callback on given channel.
+     *
+     *  @param  string      The channel name.
+     *  @param  function    The callback to uninstall.
+     *  @return Emitter
+     *
+     *  ---------------------------------------------
+     *
+     *  Uninstall all registered callbacks.
+     *
+     *  @return Emitter
+     */
+    off(name, callback) {
+
+        // should we uninstall a callback on specific channel? or all possible callbacks?
+        if (name) {
+
+            // do we even have a channel under this name?
+            if (!this[channels][name]) return this;
+
+            // filter the callbacks
+            this[channels].set(name, this[channels].get(name).filter(function (item) {
+
+                // allow only callabacks that we don't want to uninstall
+                return item != callback;
+            }));
+
+        // we should remove all possible callbacks
+        } else this[channels].clear();
+
+        // allow chaining
+        return this;
+    }
+
+    /**
+     *  This is a function that will allow to bubble an event to another emitter
+     *
+     *  @param  EventEmitter
+     */
+    bubbleTo(target) {
+
+        // do we have a new target to set?
+        if (typeof(target) != 'undefined') {
+
+            // set the bubble to target
+            this[bubbleTo] = target;
+
+            // allow chaining
+            return this;
+        }
+
+        // return the current bubble to
+        return this[bubbleTo];
+    }
+
+    /**
+     *  A method to create an event based on this emitter.
+     *
+     *  @param  string  The name of the channel of the event.
+     *  @param  mixed   (Optional) The object of the event.
+     *  @param  Event   (Optional) The previous event in the chain. If none
+     *                  is provided then event has no previous event.
+     *
+     *  @return Event   The constructed event.
+     */
+    createEvent(name, data = { }, previousEvent = null) {
+
+        // construct new event
+        return new Event(name, data, this, previousEvent);
+    }
+};
+
+},{"./Event.js":39}],39:[function(require,module,exports){
+/**
+ *  This is a class to acompany the Emitter class. The Event has important
+ *  properties:
+ *
+ *  type:string             The type of the event (basically the event/chanel name)
+ *  data:mixed              The additional data assigned to the event.
+ *  target:Emitter          The emitter that ignited the event.
+ *  currentTarget:Emitter   The last emitter in bubble chaing
+ *
+ *  @author Paweł Kuźnik <pawel.kuznik@gmail.com>
+ */
+
+// the private symbols
+const _type = Symbol('type');
+const _data = Symbol('data');
+const _target = Symbol('target');
+const _prev = Symbol('prev');
+const _prevented = Symbol('prevented');
+const _stopped = Symbol('stopped');
+
+// return the class
+module.exports = class {
+
+    /**
+     *  The constructor
+     *
+     *  @param  sting   The channel type of the event.
+     *  @param  mixed   The data associated with the event.
+     *  @param  Emitter The emitter that triggers this event.
+     *  @param  Event   The previous event in chain that lead to this event.
+     */
+    constructor(type, data, target = null, prevEvent = null) {
+
+        // assign the basic data
+        this[_type] = type;
+        this[_data] = data;
+        this[_target] = target;
+        this[_prev] = prevEvent;
+
+        // assign the properties
+        this[_prevented] = false;
+        this[_stopped] = false;
+    }
+
+    /**
+     *  Prevent the event.
+     *
+     *  @return Event   The prevented event.
+     */
+    prevent() {
+
+        // mark the event as prevented
+        this[_prevented] = true;
+
+        // return same event
+        return this;
+    }
+
+    /**
+     *  Is the event prevented.
+     *
+     *  @return bool
+     */
+    get isPrevented () {
+
+        // return the prevented flag
+        return this[_prevented];
+    }
+
+    /**
+     *  Stop the event
+     */
+    stop() {
+
+        // mark the event as stopped
+        this[_stopped] = true;
+
+        // allow chaining
+        return this;
+    }
+
+    /**
+     *  Is the event stopped.
+     *
+     *  @return bool
+     */
+    get isStopped () {
+
+        return this[_stopped];
+    }
+
+    /**
+     *  Return the type of the event.
+     *
+     *  @return string
+     */
+    get type () {
+
+        // return the type
+        return this[_type];
+    }
+
+    /**
+     *  The data associated with the event.
+     *
+     *  @return mixed
+     */
+    get data() {
+
+        // return the data
+        return this[_data];
+    }
+
+    /**
+     *  Get the target of the event.
+     *
+     *  @return Emitter
+     */
+    get target() {
+
+        // return the event's target
+        return this[_target];
+    }
+
+    /**
+     *  Get the previos event in the chain.
+     *  
+     *  @return Event
+     */
+    get previous() {
+
+        // return the previous event
+        return this[_prev];
+    }
+
+    /**
+     *  Create new event based on this one.
+     *
+     *  @param  string  The name of the event's channel.
+     *  @param  mixed   (Optional) The associated data.
+     *  @param  Emitter (Optional) The emitter instance that is the target of the event. If
+     *                  no target is provided, the current event target is used.
+     */
+    createEvent(name, data = { }, target = null) {
+
+        // return new event instance
+        return new this.constructor(name, data, target ? target : this.target, this);
+    }
+};
+
+},{}],40:[function(require,module,exports){
+'use strict';
+
+/* !
+ * Chai - pathval utility
+ * Copyright(c) 2012-2014 Jake Luer <jake@alogicalparadox.com>
+ * @see https://github.com/logicalparadox/filtr
+ * MIT Licensed
+ */
+
+/**
+ * ### .hasProperty(object, name)
+ *
+ * This allows checking whether an object has own
+ * or inherited from prototype chain named property.
+ *
+ * Basically does the same thing as the `in`
+ * operator but works properly with null/undefined values
+ * and other primitives.
+ *
+ *     var obj = {
+ *         arr: ['a', 'b', 'c']
+ *       , str: 'Hello'
+ *     }
+ *
+ * The following would be the results.
+ *
+ *     hasProperty(obj, 'str');  // true
+ *     hasProperty(obj, 'constructor');  // true
+ *     hasProperty(obj, 'bar');  // false
+ *
+ *     hasProperty(obj.str, 'length'); // true
+ *     hasProperty(obj.str, 1);  // true
+ *     hasProperty(obj.str, 5);  // false
+ *
+ *     hasProperty(obj.arr, 'length');  // true
+ *     hasProperty(obj.arr, 2);  // true
+ *     hasProperty(obj.arr, 3);  // false
+ *
+ * @param {Object} object
+ * @param {String|Symbol} name
+ * @returns {Boolean} whether it exists
+ * @namespace Utils
+ * @name hasProperty
+ * @api public
+ */
+
+function hasProperty(obj, name) {
+  if (typeof obj === 'undefined' || obj === null) {
+    return false;
+  }
+
+  // The `in` operator does not work with primitives.
+  return name in Object(obj);
+}
+
+/* !
+ * ## parsePath(path)
+ *
+ * Helper function used to parse string object
+ * paths. Use in conjunction with `internalGetPathValue`.
+ *
+ *      var parsed = parsePath('myobject.property.subprop');
+ *
+ * ### Paths:
+ *
+ * * Can be infinitely deep and nested.
+ * * Arrays are also valid using the formal `myobject.document[3].property`.
+ * * Literal dots and brackets (not delimiter) must be backslash-escaped.
+ *
+ * @param {String} path
+ * @returns {Object} parsed
+ * @api private
+ */
+
+function parsePath(path) {
+  var str = path.replace(/([^\\])\[/g, '$1.[');
+  var parts = str.match(/(\\\.|[^.]+?)+/g);
+  return parts.map(function mapMatches(value) {
+    var regexp = /^\[(\d+)\]$/;
+    var mArr = regexp.exec(value);
+    var parsed = null;
+    if (mArr) {
+      parsed = { i: parseFloat(mArr[1]) };
+    } else {
+      parsed = { p: value.replace(/\\([.\[\]])/g, '$1') };
+    }
+
+    return parsed;
+  });
+}
+
+/* !
+ * ## internalGetPathValue(obj, parsed[, pathDepth])
+ *
+ * Helper companion function for `.parsePath` that returns
+ * the value located at the parsed address.
+ *
+ *      var value = getPathValue(obj, parsed);
+ *
+ * @param {Object} object to search against
+ * @param {Object} parsed definition from `parsePath`.
+ * @param {Number} depth (nesting level) of the property we want to retrieve
+ * @returns {Object|Undefined} value
+ * @api private
+ */
+
+function internalGetPathValue(obj, parsed, pathDepth) {
+  var temporaryValue = obj;
+  var res = null;
+  pathDepth = (typeof pathDepth === 'undefined' ? parsed.length : pathDepth);
+
+  for (var i = 0; i < pathDepth; i++) {
+    var part = parsed[i];
+    if (temporaryValue) {
+      if (typeof part.p === 'undefined') {
+        temporaryValue = temporaryValue[part.i];
+      } else {
+        temporaryValue = temporaryValue[part.p];
+      }
+
+      if (i === (pathDepth - 1)) {
+        res = temporaryValue;
+      }
+    }
+  }
+
+  return res;
+}
+
+/* !
+ * ## internalSetPathValue(obj, value, parsed)
+ *
+ * Companion function for `parsePath` that sets
+ * the value located at a parsed address.
+ *
+ *  internalSetPathValue(obj, 'value', parsed);
+ *
+ * @param {Object} object to search and define on
+ * @param {*} value to use upon set
+ * @param {Object} parsed definition from `parsePath`
+ * @api private
+ */
+
+function internalSetPathValue(obj, val, parsed) {
+  var tempObj = obj;
+  var pathDepth = parsed.length;
+  var part = null;
+  // Here we iterate through every part of the path
+  for (var i = 0; i < pathDepth; i++) {
+    var propName = null;
+    var propVal = null;
+    part = parsed[i];
+
+    // If it's the last part of the path, we set the 'propName' value with the property name
+    if (i === (pathDepth - 1)) {
+      propName = typeof part.p === 'undefined' ? part.i : part.p;
+      // Now we set the property with the name held by 'propName' on object with the desired val
+      tempObj[propName] = val;
+    } else if (typeof part.p !== 'undefined' && tempObj[part.p]) {
+      tempObj = tempObj[part.p];
+    } else if (typeof part.i !== 'undefined' && tempObj[part.i]) {
+      tempObj = tempObj[part.i];
+    } else {
+      // If the obj doesn't have the property we create one with that name to define it
+      var next = parsed[i + 1];
+      // Here we set the name of the property which will be defined
+      propName = typeof part.p === 'undefined' ? part.i : part.p;
+      // Here we decide if this property will be an array or a new object
+      propVal = typeof next.p === 'undefined' ? [] : {};
+      tempObj[propName] = propVal;
+      tempObj = tempObj[propName];
+    }
+  }
+}
+
+/**
+ * ### .getPathInfo(object, path)
+ *
+ * This allows the retrieval of property info in an
+ * object given a string path.
+ *
+ * The path info consists of an object with the
+ * following properties:
+ *
+ * * parent - The parent object of the property referenced by `path`
+ * * name - The name of the final property, a number if it was an array indexer
+ * * value - The value of the property, if it exists, otherwise `undefined`
+ * * exists - Whether the property exists or not
+ *
+ * @param {Object} object
+ * @param {String} path
+ * @returns {Object} info
+ * @namespace Utils
+ * @name getPathInfo
+ * @api public
+ */
+
+function getPathInfo(obj, path) {
+  var parsed = parsePath(path);
+  var last = parsed[parsed.length - 1];
+  var info = {
+    parent: parsed.length > 1 ? internalGetPathValue(obj, parsed, parsed.length - 1) : obj,
+    name: last.p || last.i,
+    value: internalGetPathValue(obj, parsed),
+  };
+  info.exists = hasProperty(info.parent, info.name);
+
+  return info;
+}
+
+/**
+ * ### .getPathValue(object, path)
+ *
+ * This allows the retrieval of values in an
+ * object given a string path.
+ *
+ *     var obj = {
+ *         prop1: {
+ *             arr: ['a', 'b', 'c']
+ *           , str: 'Hello'
+ *         }
+ *       , prop2: {
+ *             arr: [ { nested: 'Universe' } ]
+ *           , str: 'Hello again!'
+ *         }
+ *     }
+ *
+ * The following would be the results.
+ *
+ *     getPathValue(obj, 'prop1.str'); // Hello
+ *     getPathValue(obj, 'prop1.att[2]'); // b
+ *     getPathValue(obj, 'prop2.arr[0].nested'); // Universe
+ *
+ * @param {Object} object
+ * @param {String} path
+ * @returns {Object} value or `undefined`
+ * @namespace Utils
+ * @name getPathValue
+ * @api public
+ */
+
+function getPathValue(obj, path) {
+  var info = getPathInfo(obj, path);
+  return info.value;
+}
+
+/**
+ * ### .setPathValue(object, path, value)
+ *
+ * Define the value in an object at a given string path.
+ *
+ * ```js
+ * var obj = {
+ *     prop1: {
+ *         arr: ['a', 'b', 'c']
+ *       , str: 'Hello'
+ *     }
+ *   , prop2: {
+ *         arr: [ { nested: 'Universe' } ]
+ *       , str: 'Hello again!'
+ *     }
+ * };
+ * ```
+ *
+ * The following would be acceptable.
+ *
+ * ```js
+ * var properties = require('tea-properties');
+ * properties.set(obj, 'prop1.str', 'Hello Universe!');
+ * properties.set(obj, 'prop1.arr[2]', 'B');
+ * properties.set(obj, 'prop2.arr[0].nested.value', { hello: 'universe' });
+ * ```
+ *
+ * @param {Object} object
+ * @param {String} path
+ * @param {Mixed} value
+ * @api private
+ */
+
+function setPathValue(obj, path, val) {
+  var parsed = parsePath(path);
+  internalSetPathValue(obj, val, parsed);
+  return obj;
+}
+
+module.exports = {
+  hasProperty: hasProperty,
+  getPathInfo: getPathInfo,
+  getPathValue: getPathValue,
+  setPathValue: setPathValue,
+};
+
+},{}],41:[function(require,module,exports){
+/**
+ *  This is a class describing a component. A component is a part of the UI.
+ *  As a part of the UI it expose an element to use as it's representation.
+ *  This element can be accessed via .elem property.
+ *
+ *  The Component class can be initalized with following options:
+ *
+ *      elem:DOMElement The element that should be used as the component's
+ *                      element. By passing a custom element to the constructor
+ *                      you also pass the ownership of that element to the
+ *                      component. This means that component will modify and
+ *                      remove (if needed) the element during it's lifecycle.
+ *
+ *                      (Default: <div>)
+ *
+ *      template:string This path to a template that should be loaded into
+ *                      the component. The file behind the path should
+ *                      contain a HTML inside.
+ *
+ *                      When the template is loaded the .ready() promise
+ *                      is resolved.
+ *
+ *                      (Default: null)
+ *
+ *  This Component class can emmit following events:
+ *
+ *  @event  removed     This event emmits when the component was removed
+ *                      and should not be used further.
+ *
+ *  @author     Paweł Kuźnik <pawel.kuznik@gmail.com>
+ */
+
+// get the dependencies
+const EventHandlers = require('./EventHandlers.js');
+const Template = require('./Template.js');
+
+// the privates
+const elem = Symbol('elem');
+const template = Symbol('template');
+const adopted = Symbol('adopted');
+const adoptedRemovedHandler = Symbol('adoptedRemovedHandler');
+
+// export the class
+const Component = class extends EventHandlers.Emitter {
+
+    /**
+     *  The constructor.
+     *
+     *  @param  object  @see the file-level docblock
+     */
+    constructor(inits = { }) {
+
+        // construct the base class
+        super();
+
+        /**
+         *  The element housing the component in the DOM tree.
+         *  @var    HTMLElement
+         */
+        this[elem] = inits.elem || document.createElement('DIV');
+
+        /**
+         *  Possible template of this component.
+         *  @var    Template
+         */
+        this[template] = null;
+
+        /**
+         *  A set of adopted components.
+         *  @var    Set
+         */
+        this[adopted] = new Set();
+
+        /**
+         *  A handler to react on when an adopted component is removed.
+         *  @var    function
+         */
+        this[adoptedRemovedHandler] = event => {
+
+            // release the event target (the adopted component)
+            this.release(event.target);
+        };
+
+        // should we load a template into our component?
+        if(inits.template) {
+            
+            // construct a template
+            this[template] = new Template(inits.template);
+
+            // tell the template to arrive to our element
+            this[template].arrivesTo(this.elem);
+        }
+    }
+
+    /**
+     *  Get access to the component's elements.
+     *  @return DOMElement
+     */
+    get elem () { return this[elem]; }
+
+    /**
+     *  Get access to the component's content element. This is an element that
+     *  other things can use to add more content. In many cases it's the same
+     *  element as the `.elem`, but derived components might change it.
+     *  @return DOMElement
+     */
+    get content() { return this.elem; }
+
+    /**
+     *  A component is a thenable object. This promise resolves when
+     *  the component is fully loaded. If the component is removed before
+     *  if can be initialized the promise is rejected.
+     *  @return Promise
+     */
+    then(successCallback, failureCallback) {
+
+        // if we do have the template promise we would like to return a new one
+        if (this[template]) return this[template].then(successCallback, failureCallback);
+
+        // create a resolved promise, cause we never neded to load a template
+        let promise = new Promise((resolve, reject) => { resolve(); });
+
+        // return the resolved promise
+        return promise.then(successCallback, failureCallback);
+    }
+
+    /**
+     *  Adopting a component transfer the cleanup responsibity to the adopter.
+     *  This means that you don't need to call the remove method on the adoptee.
+     *  @param  Component   The component to adopt.
+     *  @return Component   The adopted component.
+     */
+    adopt(component) {
+
+        // add the component to the adopted ones
+        this[adopted].add(component);
+
+        // install a removed handler
+        component.on('removed', this[adoptedRemovedHandler]);
+
+        // return the same component
+        return component;
+    }
+
+    /**
+     *  Releasing a component means to give up the responsibility to remove
+     *  the adopted component.
+     *  @param  Component   The component to release.
+     *  @return Component   The released component.
+     */
+    release(component) {
+
+        // install a removed handler
+        component.off('removed', this[adoptedRemovedHandler]);
+
+        // release the component
+        this[adopted].delete(component);
+    
+        // return the component
+        return component;
+    }
+
+    /**
+     *  Append a component or an element to this component.
+     *  @param  Component|Element
+     *  @return Component
+     */
+    append(child) {
+
+        // if we are dealing with a component we want to append the component element to our
+        if (child instanceof Component) this.content.appendChild(child.elem);
+
+        // if we are dealing with an element we want to append the element like that
+        if (child instanceof Element) this.content.appendChild(child);
+
+        // allow chaining
+        return this;
+    }
+
+    /**
+     *  Append the component to an another componet or an element.
+     *  @param  Component|Element
+     *  @return Component
+     */
+    appendTo(target) {
+
+        // if we are dealing with a component we want to append our element to the component element
+        if (target instanceof Component) target.content.appendChild(this.elem);
+
+        // if we are dealing with an element, we just want to append our element to it
+        if (target instanceof Element) target.appendChild(this.elem);
+
+        // allow chaining
+        return this;
+    }
+
+    /**
+     *  Remove the component.
+     */
+    remove() {
+
+        // remove all of the adopted components
+        for (let component of this[adopted]) {
+
+            // remove the component
+            component.remove();
+
+            // forget about the component
+            this.release(component);
+        }
+
+        // was the component already removed? then do nothing
+        if (!this[elem]) return;
+
+        // if we have a template promise we should abort it at this time
+        if (this[template]) this[template].abort();
+
+        // remove the element
+        this[elem].remove();
+        this[elem] = null;
+
+        // trigger the removed event
+        this.triggerer.triggerEvent('removed');
+
+        // remove all event handlers. At this point they are meaningless
+        this.off();
+    }
+};
+
+// export the class
+module.exports = Component;
+
+},{"./EventHandlers.js":44,"./Template.js":47}],42:[function(require,module,exports){
+/**
+ *  This is a container class that that enables mounting various components
+ *  inside it.
+ *
+ *  This component triggers following events:
+ *
+ *  @event      installed   This event triggers when a new component is installed
+ *                          inside the container.
+ *
+ *  @event      cleared     This event triggers when component was clear from
+ *                          a current instance.
+ *
+ *  The Container class can be initalized with following options:
+ *
+ *      elem:DOMElement The element that should be used as the containers's
+ *                      element. By passing a custom element to the constructor
+ *                      you also pass the ownership of that element to the
+ *                      component. This means that component will modify and
+ *                      remove (if needed) the element during it's lifecycle.
+ *
+ *                      (Default: <div>)
+ *  @author     Pawel Kuznik <pawel.kuznik@gmail.com>
+ */
+
+// the depencies
+const Component = require('./Component.js');
+
+// the privates
+const current = Symbol('current');
+
+// export the class
+module.exports = class extends Component {
+
+    /**
+     *  The constructor
+     *
+     *  @param  see file-level doc block
+     */
+    constructor(params = { }) {
+
+        // construct the parent class and pass some of the parameters to the parent class
+        super({
+            elem:   params.elem
+        });
+
+        /**
+         *  The currently installed component.
+         *  @var    Component
+         */
+        this[current] = null;
+    }
+
+    /**
+     *  Get the currently installed component.
+     *  @return Component
+     */
+    get current() {
+
+        // return the the currently installed component
+        return this[current];
+    }
+
+    /**
+     *  Install a new widget inside the container.
+     */
+    install(Widget, ...args) {
+
+        // is there something installed?
+        if (this[current]) this[current].remove();
+
+        // construct new widget
+        this[current] = this.adopt(new Widget(...args));
+        this.elem.appendChild(this[current].elem);
+
+        // trigger cleared event
+        this.triggerer.triggerEvent('added');
+
+        // install an onremoved handler to clear the container when
+        // the current component is removed
+        this[current].on('removed', () => {
+
+            // clear the container
+            this.clear();
+        });
+
+        // allow chaining
+        return this[current];
+    }
+
+    /**
+     *  Remove the currently installed component.
+     */
+    clear() {
+
+        // no current? we can leap out 
+        if (!this[current]) return this;
+
+        // do we have a current component installed?
+        this.release(this[current]).remove();
+
+        // reset the variable
+        this[current] = null;
+
+        // trigger cleared event
+        this.triggerer.triggerEvent('cleared');
+
+        // allow chaining
+        return this;
+    }
+};
+
+},{"./Component.js":41}],43:[function(require,module,exports){
+/**
+ *  This is a function that allows for creating an DOM element in a very quick
+ *  and easy way.
+ *
+ *  @param  string  The tag name of the element. It should be capitalized.
+ *  @param  object  A key-value object of attributes to assign to the element.
+ *  @return Element The element to create.
+ */
+module.exports = function(tagName, attrs = { }) {
+
+    // create the element
+    const element = document.createElement(tagName);
+
+    // itarate over the attributes
+    for(let attr in attrs) {
+
+        // set the attribute
+        element.setAttribute(attr, attrs[attr]);
+    }
+
+    // return the element
+    return element;
+};
+
+},{}],44:[function(require,module,exports){
+/**
+ *  This is a thin wrapper around Iventy.Emitter class that allows to be used a
+ *  internal instance for the event handlers/emitters for a component.
+ *  
+ *  @author     Pawel Kuznik <pawel.kuznik@gmail.com>
+ */
+
+// get the dependency
+const BaseEmitter = require('iventy').Emitter;
+const Event = require('iventy').Event;
+
+// the private symbols
+const emitter = Symbol('emitter');
+
+/**
+ *  This is a class that exposes the emitting part of the event interface.This is
+ *  meant to be used as a base class or in public interface.
+ */
+const Emitter = class {
+
+    /**
+     *  The constructor.
+     */
+    constructor() {
+    
+        /**
+         *  The actual event system emitter.
+         *  @var    Iventy.Emitter
+         */
+        this[emitter] = new BaseEmitter();
+    }
+
+    /**
+     *  Install a new event handler.
+     *  @param  variadic    Look into Iventy.Emitter.on() for mode info.
+     */
+    on(...args) {
+
+        // the same signature, so we can pass the arguments just like that
+        this[emitter].on(...args);
+
+        // allow chaining
+        return this;
+    }
+
+    /**
+     *  Uninstall an event handler.
+     *  @param  variadic    Look into Iventy.Emitter.on() for mode info.
+     */
+    off(...args) {
+
+        // the same signature, so we can pass the arguments just like that
+        this[emitter].off(...args);
+
+        // allow chaining
+        return this;
+    }
+
+    /**
+     *  Bubble events to a new target.
+     *  @param  variadic    Look into Iventy.Emitter.on() for mode info.
+     */
+    bubbleTo(...args) {
+
+        // the same signature, so we can pass the arguments just like that
+        this[emitter].bubbleTo(...args);
+
+        // allow chaining
+        return this;
+    }
+
+    /**
+     *  Get access to the events triggerer.
+     *  @return Triggerer
+     */
+    get triggerer() {
+
+        // return new triggerer
+        return new Triggerer(this);
+    }
+};
+
+/**
+ *  This is a class that exposes the triggering part of the event interface.This
+ *  class works in pair with the EventEmitter and it need to be instantiated with
+ *  that emitter insteance.
+ */
+const Triggerer = class {
+
+    /**
+     *  The constructor.
+     *
+     *  @param  EventEmitter
+     */
+    constructor(parentEmitter) {
+
+        /**
+         *  The emitter instance.
+         *  @var    Emitter
+         */
+        this[emitter] = parentEmitter;
+    }
+    
+    /**
+     *  Trigger an event.
+     */
+    trigger(...args) {
+        
+        // trigger an event
+        this[emitter][emitter].trigger(...args);
+
+        // allow chaining
+        return this;
+    }
+
+    /**
+     *  A shorthand for this.trigger(this.createEvent))
+     */
+    triggerEvent(...args) {
+    
+        // trigger the event
+        this.trigger(this.createEvent(...args));
+
+        // allow chaining
+        return this;
+    }
+
+    /**
+     *  Create a new event instance.
+     */
+    createEvent(name, data = { }, previousEvent = null) {
+
+        // create a new event
+        return new Event(name, data, this[emitter], previousEvent);
+    }
+};
+
+// expose the classes
+module.exports = {
+    Emitter:    Emitter,
+    Triggerer:  Triggerer
+};
+
+
+},{"iventy":37}],45:[function(require,module,exports){
+/**
+ *  This is a form class. This class abstracts a regular HTML form element 
+ *  and provides a series of methods to manager output of a form. 
+ *
+ *  This component fires following events:
+ *
+ *  @event  submit      This event triggers when a user submits a form somehow.
+ *
+ *  @event  submitted   This event triggers when the form is submitted by an
+ *                      user or API. This event trigger after the submit processing
+ *                      is done.
+ *
+ *  @author Paweł Kuźnik <pawel.kuznik@gmail.com>
+ */
+
+// the dependencies
+const Component = require('./Component.js');
+const form = require('./form.js');
+const object = require('./object.js');
+
+// the data of the form
+const data = Symbol('data');
+
+// export the class
+module.exports = class extends Component {
+
+    /**
+     *  The constructor of the form.
+     *
+     *  @param  object  The options object. It supports all Component
+     *                  options and additional one:
+     *
+     *                  data:object     An initial object to fill the form with.
+     */
+    constructor(inits = { }) {
+
+        // construct base object
+        super(Object.assign({ }, {
+            elem:   document.createElement('form')
+        }, inits));
+
+        /**
+         *  An actual object might be bound to the form. This allows to have
+         *  an form to data binding. The form later on can be asked to update
+         *  itself or to push the current data on the object.
+         *
+         *  @var    object
+         */
+        this[data] = inits.data || { };
+
+        // install an on submit handler
+        this.elem.addEventListener('submit', event => {
+
+            // no default handling
+            event.preventDefault();
+
+            // create our submit event
+            let submitEvent = this.triggerer.createEvent('submit');
+
+            // trigger the event
+            this.triggerer.trigger(submitEvent);
+
+            // was the event prevented?
+            if (submitEvent.isPrevented) return;
+
+            // submit the form
+            this.submit();
+        });
+
+        // if we can initialize the form we can do this
+        if (inits.data) {
+         
+            // when the component is ready we want to fill the form with initial
+            // data set.
+            this.then(() => {
+                this.fill(inits.data);
+            });
+        }
+    }
+
+    /**
+     *  Get access to current data.
+     *  @return object
+     */
+    get data() {
+
+        // return current data object
+        return this[data];
+    }
+
+    /**
+     *  Push current form state to the data object.
+     *  @return Form
+     */
+    push() {
+
+        // push the data on the object
+        this.assign(this.data);
+
+        // allow chaining
+        return this;
+    }
+
+    /**
+     *  Pull data from the data object to the form.
+     *  @return Form
+     */
+    pull() {
+
+        // reset the form
+        this.elem.reset();
+
+        // fill the form with current data object
+        this.fill(this.data);
+
+        // allow chaining
+        return this;
+    }
+
+    /**
+     *  Fill the form with a fresh data.
+     *  @param  object
+     *  @return Form    The object to chain.
+     */
+    fill(newData) {
+
+        // get all the inputs, textareas, or selects to fill with with data
+        // from the object.
+        let inputs = this.elem.querySelectorAll('input, textarea');
+
+        // @todo support checkboxes and radio buttons.
+        // @todo support select
+
+        // iterate over the inputs
+        for (let input of inputs) {
+
+            // get data from the object by value
+            let value = object.get(newData, input.getAttribute('name'));
+
+            // undefined value? then we want to remove the value all together
+            if (typeof(value) == 'undefined') input.removeAttribute('value');
+
+            // we area dealing with a text or text-like value
+            else {
+
+                // if the value is null or undefined, then we want to assign
+                // empty string to the actual element
+                if (value == null || typeof(value) == 'undefined') input.value = '';
+
+                // assign a string version of the value
+                else input.setAttribute('value', value);
+            }
+        }
+
+        // allow chaining
+        return this;
+    }
+
+    /**
+     *  Apply the form data on a specific object. This is useful when a form
+     *  is dealing with object to be assigned and then updated by the form.
+     *  The target object will be assigned with the data from the form.
+     *
+     *  @param  object  The target object to assign the form data.
+     *  @return Form    Chained object
+     */
+    assign(target) {
+
+        // set get the plain data
+        let plainData = form.toJSON(this.elem);
+
+        // assign all data with the accessor
+        for(let key in plainData) object.set(target, key, plainData[key]);
+
+        // allow chaining
+        return this;
+    }
+
+    /**
+     *  Submit the form. This method make a programatic submit and does not
+     *  force the element to submit. This method can be overriden to provide
+     *  specific submit behavior. Event in such case, parent method shoud be
+     *  called to maintain the 'submitted' event call.
+     *
+     *  @return Form
+     */
+    submit() {
+
+        // push the current state of the form to the data object
+        this.push();
+
+        // trigger the submitted event
+        this.triggerer.triggerEvent('submitted');
+
+        // allow chaining
+        return this;
+    }
+};
+
+},{"./Component.js":41,"./form.js":48,"./object.js":51}],46:[function(require,module,exports){
+/**
+ *  This is a class that allows to create a simple list of components. This list
+ *  holds the instance of the components installed here and properly bubbles all
+ *  events to one common point.
+ *
+ *  In addition to standard Component events and the events related to the children
+ *  of the list this component triggers following events:
+ *
+ *  @event      added       This event triggers when a new component is added to
+ *                          the list.
+ *
+ *  @event      deleted     This event triggers when a component is deleted from
+ *                          the list.
+ *
+ *  @author     Pawel Kuznik <pawel.kuznik@gmail.com>
+ */
+
+// get the dependencies
+const Component = require('./Component.js');
+
+// the privates
+const components = Symbol('components');
+const removedHandler = Symbol('removedHandler');
+
+// export the class
+module.exports = class extends Component { 
+
+    /**
+     *  The constructor
+     *
+     *  @param  object  @see the Component documentation.
+     */
+    constructor(inits = { }) {
+
+        // call the parent constructor
+        super(inits);
+
+        /**
+         *  The list of component housed inside this list.
+         *  @var    Set
+         */
+        this[components] = new Set();
+
+        /**
+         *  A special event handler for when a list component is removed.
+         *
+         *  @param  Iventy.Event    The removed event.
+         */
+        this[removedHandler] = event => {
+
+            // not our component
+            if (!this[components].has(event.target)) return;
+
+            // remove the target from us
+            this.delete(event.target);
+        }
+    }
+
+    /**
+     *  Constuct a new component inside this list.
+     *
+     *  @param  constructor     A Component's constructor.
+     *  @param  variadic        A list of parameters to the constructor.
+     *  @return Component       The added item.
+     */
+    add(Component, ...args) {
+
+        // construct the component
+        let component = new Component(...args);
+
+        // we want to remember the component for later use
+        this[components].add(component);
+
+        // add the component element to the list element
+        this.content.appendChild(component.elem);
+
+        // if the component is removed, then we want to remove it from the list also.
+        component.on('removed', this[removedHandler]);
+
+        // tell others that a list item was removed
+        this.triggerer.triggerEvent('added', { item: component });
+
+        // return the added item
+        return component;
+    }
+
+    /**
+     *  Delete a component from the list. The component should be one of the components
+     *  created with the .add() method. If not one of them, then this method has no effect.
+     *
+     *  @param  Component   The component to remove from the list.
+     *  @return List.
+     */
+    delete(component) {
+
+        // not our component? skip processing
+        if (!this[components].has(component)) return this;
+
+        // stop listening to the removed handler
+        component.off('removed', this[removedHandler]);
+
+        // remove the component from our list
+        this[components].delete(component);
+
+        // .removeChild() may throw
+        try
+        {
+            // try to remove the child
+            this.content.removeChild(component.elem);
+
+            // tell others that a list item was removed
+            this.triggerer.triggerEvent('deleted', { item: component });
+        }
+
+        // the component was not a child of our list. Everything is ok.
+        catch(e) { }
+
+        // allow chaining
+        return this;
+    }
+
+    /**
+     *  Clear the list out of all components.
+     *
+     *  @return List
+     */ 
+    clear() {
+
+        // iterate over the list and delete each component
+        for(let c of this) this.delete(c);
+
+        // allow chaining
+        return this;
+    }
+
+    /**
+     *  Get access to installed components.
+     *
+     *  @return Array
+     */
+    get components () {
+
+        // return the components
+        return Array.from(this[components]);
+    }
+
+    /**
+     *  Get the iterator so it's possible to go through the list.
+     */
+    * [Symbol.iterator] () {
+    
+        // yield all the components.
+        for (let component of this[components]) yield component;
+    }
+};
+
+},{"./Component.js":41}],47:[function(require,module,exports){
+/** 
+ *  This is a class describing a HTML template fetched from an URL. The class is
+ *  a thenable object cause it manages data fetched from a server under a specific
+ *  URL.
+ *
+ *  This class only manages the template resource (not the usage of lifecycle of
+ *  the actual content), but it can be told to make a copy of the template and
+ *  insert it to a specific HTML element. Use arrivesTo() method to do it asynchronously.
+ *
+ *  @author     Pawel Kuznik <pawel.kuznik@gmail.com>
+ */
+
+// the privates
+const controller = Symbol('controller');
+const promise = Symbol('promise');
+
+// export the class
+module.exports = class {
+
+    /**
+     *  The constructor.
+     *  @param  string  The url of the template.
+     */
+    constructor(url) {
+
+        /**
+         *  Construct an abort controller.
+         *  @var    AbortController
+         */
+        this[controller] = new AbortController();
+
+        // the abort signal
+        const signal = this[controller].signal;
+
+        /**
+         *  The promise that fetches the template content.
+         *  @var    Promise
+         */
+        this[promise] = fetch(url, { signal }).then(response => response.text());
+    }
+
+    /**
+     *  A template is a thenable object as it represents a resource that
+     *  potentially will be fetched from the server.
+     *
+     *  @param  function    success callback
+     *  @param  function    failure callback
+     */
+    then(success, failure) {
+        
+        // install callbacks
+        return this[promise].then(success, failure);
+    }
+
+    /**
+     *  Make a copy of the template to arrive to a specific HTML element.
+     *
+     *  @param  HTMLElement     The element that should get a copy of the template.
+     *  @return Promise         A promise resolved when the template copy is in the
+     *                          target element.
+     */
+    arrivesTo(target) {
+
+        // await the promise and add the HTML to the target
+        return this[promise].then(html => {
+
+            // construct a template element so we can parse the html
+            let template = document.createElement('template');
+
+            // assign the string to the template
+            template.innerHTML = html;
+
+            // adopt all children
+            let child;
+            while(child = template.content.firstElementChild) target.appendChild(target.ownerDocument.adoptNode(child));
+
+            // we can remove the template element
+            template.remove();
+        });
+    }
+
+    /**
+     *  Abort the template object.
+     */
+    abort() {
+
+        // make an abort
+        this[controller].abort();
+    }
+};
+
+},{}],48:[function(require,module,exports){
+/**
+ *  This is a class that holds the interface for the form module
+ *
+ *  @author     Pawel Kuznik <pawel.kuznik@gmail.com>
+ */
+
+// this is the interface of form module
+module.exports = {
+    fromJSON:   require('./form/fromJSON.js'),
+    toJSON:     require('./form/toJSON.js')
+};
+
+},{"./form/fromJSON.js":49,"./form/toJSON.js":50}],49:[function(require,module,exports){
+/**
+ *  This is a helper function to fill a form element with data from a JSON object.
+ *  The JSON object should be a KEY-VALUE representation of the inputs in the form.
+ *
+ *  @author     Pawel Kuznik <pawel.kuznik@gmail.com>
+ */
+
+/**
+ *  The actual function.
+ *  @param  HTMLElement     The FORM element
+ *  @param  object          The object that should be iterated and assigned to a form.
+ */
+module.exports = function (form, data) {
+
+    // iterate over the data and set the values one by one
+    for (let property in data) {
+
+        // fetch the first element with give name
+        let input = form.querySelector('[name="' + property + '"]');
+
+        // no found? skip it
+        if (!input) continue;
+
+        // set the input value
+        input.value = (typeof(data[property] != 'undefined') && data[property] != null) ? data[property] : '';
+    }
+};
+
+},{}],50:[function(require,module,exports){
+/**
+ *  This is a function that allows to cast a form element to a JSON object.
+ *  This function is primarly intended to create a REST API friendly representation
+ *  of form data.
+ *
+ *  @author     Pawel Kuznik <pawel.kuznik@gmail.com>
+ */
+
+/**
+ *  The function
+ *  @param  HTMLElement     The form element to serialize to an JSON object
+ *  @return object          The object with form data.
+ */
+module.exports = function(element) {
+
+    // get the form data of a form
+    let data = new FormData(element);
+
+    // an object that we will use to store the data
+    let parsed = { };
+
+    // iterate over the form data and assign the recognized
+    // data to the parsed object
+    for(let [key, value] of data) parsed[key] = value;
+
+    // return the parsed object
+    return parsed;
+};
+
+},{}],51:[function(require,module,exports){
+/**
+ *  A file to expose the interface of object module.
+ *
+ *  @author     Pawel Kuznik <pawel.kuznik@gmail.com>
+ */
+
+// expose the API
+module.exports = {
+    get:        require('./object/get.js'),
+    set:        require('./object/set.js'),
+    deflate:    require('./object/deflate.js')
+};
+
+},{"./object/deflate.js":52,"./object/get.js":53,"./object/set.js":54}],52:[function(require,module,exports){
+/**
+ *  @author     Paweł Kuźnik <pawel.kuznink@gmail.com>
+ */
+
+const scanObject = (object, prefix = null) => {
+
+    // the result object
+    let result = { };
+
+    // iterate over the object
+    for(let prop in object) {
+
+        // compute the property
+        let property = prefix ? prefix + prop : prop;
+
+        // an object or an array? then we can descend further
+        if (typeof(object[prop]) == 'object' || typeof(object[prop]) == 'array') {
+
+            // assign result of the deeper scan to the result
+            Object.assign(result, scanObject(object[prop], property + '.'));
+        }
+
+        // assign the value
+        else result[property] = object[prop];
+    }
+
+    // return the result
+    return result;
+}
+
+/**
+ *  The imlpementation of the function.
+ *  @param  object  The object to scan and get all the properties.
+ *  @return object  The resulting object.
+ */
+module.exports = function(object) {
+
+    // the algorithm for scaning is a recursive algorithm, so we call it here
+    return scanObject(object);
+};
+
+},{}],53:[function(require,module,exports){
+/**
+ *  This is a function that allow to access a certain property in an object by
+ *  a string of keys separated by a dot. An accessor string.
+ *
+ *  @author Pawel Kuznik <pawel.kuznik@gmail.com>
+ */
+
+/**
+ *  The function.
+ *  @param  object  The object to access
+ *  @param  string  The accessor string
+ */
+module.exports = function (object, accessor) {
+
+    // variables that we will need
+    let property, properties = accessor.split('.');
+
+    // try to get deep into object
+    while(property = properties.shift()) {
+
+        // we don't have the property, so nothing to fetch
+        if (!(property in object)) return undefined;
+
+        // descend further
+        object = object[property];
+    }
+
+    // return the final thing
+    return object;
+};
+
+},{}],54:[function(require,module,exports){
+/**
+ *  This is a function that allows setting a property on an object.
+ *
+ *  @author     Pawel Kuznik <pawel.kuznik@gmail.com>
+ */
+
+/**
+ *  The function
+ *  @param  object  The object to set the property on.
+ *  @param  string  The accessor string.
+ *  @param  mixed   The new value to set the property on.
+ */
+module.exports = function(object, accessor, value) {
+
+    // split the accessor
+    let properties = accessor.split('.');
+    let last = properties.pop();
+
+    // try to get deep into object
+    while(property = properties.shift()) {
+
+        // we don't have the property, so nothing to fetch
+        if (!(property in object)) object[property] = { };
+
+        // descend further
+        object = object[property];
+    }
+
+    // set the value
+    object[last] = value;
+};
+
+},{}],55:[function(require,module,exports){
+/**
+ *  This is a file that exports the public interface of the library.
+ *
+ *  @author     Pawel Kuznik <pawel.kuznik@gmail.com>
+ */
+
+// this is the public interface of the library
+module.exports = {
+    Component:  require('./lib/Component.js'),
+    Container:  require('./lib/Container.js'),
+    Form:       require('./lib/Form.js'),
+    List:       require('./lib/List.js'),
+    form:       require('./lib/form.js'),
+    object:     require('./lib/object.js'),
+    DOM:        { createElement: require('./lib/DOM/createElement.js') }
+};
+
+},{"./lib/Component.js":41,"./lib/Container.js":42,"./lib/DOM/createElement.js":43,"./lib/Form.js":45,"./lib/List.js":46,"./lib/form.js":48,"./lib/object.js":51}],56:[function(require,module,exports){
 (function (global){
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
@@ -10339,2005 +12337,7 @@ return typeDetect;
 })));
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],36:[function(require,module,exports){
-'use strict';
-
-/* !
- * Chai - checkError utility
- * Copyright(c) 2012-2016 Jake Luer <jake@alogicalparadox.com>
- * MIT Licensed
- */
-
-/**
- * ### .checkError
- *
- * Checks that an error conforms to a given set of criteria and/or retrieves information about it.
- *
- * @api public
- */
-
-/**
- * ### .compatibleInstance(thrown, errorLike)
- *
- * Checks if two instances are compatible (strict equal).
- * Returns false if errorLike is not an instance of Error, because instances
- * can only be compatible if they're both error instances.
- *
- * @name compatibleInstance
- * @param {Error} thrown error
- * @param {Error|ErrorConstructor} errorLike object to compare against
- * @namespace Utils
- * @api public
- */
-
-function compatibleInstance(thrown, errorLike) {
-  return errorLike instanceof Error && thrown === errorLike;
-}
-
-/**
- * ### .compatibleConstructor(thrown, errorLike)
- *
- * Checks if two constructors are compatible.
- * This function can receive either an error constructor or
- * an error instance as the `errorLike` argument.
- * Constructors are compatible if they're the same or if one is
- * an instance of another.
- *
- * @name compatibleConstructor
- * @param {Error} thrown error
- * @param {Error|ErrorConstructor} errorLike object to compare against
- * @namespace Utils
- * @api public
- */
-
-function compatibleConstructor(thrown, errorLike) {
-  if (errorLike instanceof Error) {
-    // If `errorLike` is an instance of any error we compare their constructors
-    return thrown.constructor === errorLike.constructor || thrown instanceof errorLike.constructor;
-  } else if (errorLike.prototype instanceof Error || errorLike === Error) {
-    // If `errorLike` is a constructor that inherits from Error, we compare `thrown` to `errorLike` directly
-    return thrown.constructor === errorLike || thrown instanceof errorLike;
-  }
-
-  return false;
-}
-
-/**
- * ### .compatibleMessage(thrown, errMatcher)
- *
- * Checks if an error's message is compatible with a matcher (String or RegExp).
- * If the message contains the String or passes the RegExp test,
- * it is considered compatible.
- *
- * @name compatibleMessage
- * @param {Error} thrown error
- * @param {String|RegExp} errMatcher to look for into the message
- * @namespace Utils
- * @api public
- */
-
-function compatibleMessage(thrown, errMatcher) {
-  var comparisonString = typeof thrown === 'string' ? thrown : thrown.message;
-  if (errMatcher instanceof RegExp) {
-    return errMatcher.test(comparisonString);
-  } else if (typeof errMatcher === 'string') {
-    return comparisonString.indexOf(errMatcher) !== -1; // eslint-disable-line no-magic-numbers
-  }
-
-  return false;
-}
-
-/**
- * ### .getFunctionName(constructorFn)
- *
- * Returns the name of a function.
- * This also includes a polyfill function if `constructorFn.name` is not defined.
- *
- * @name getFunctionName
- * @param {Function} constructorFn
- * @namespace Utils
- * @api private
- */
-
-var functionNameMatch = /\s*function(?:\s|\s*\/\*[^(?:*\/)]+\*\/\s*)*([^\(\/]+)/;
-function getFunctionName(constructorFn) {
-  var name = '';
-  if (typeof constructorFn.name === 'undefined') {
-    // Here we run a polyfill if constructorFn.name is not defined
-    var match = String(constructorFn).match(functionNameMatch);
-    if (match) {
-      name = match[1];
-    }
-  } else {
-    name = constructorFn.name;
-  }
-
-  return name;
-}
-
-/**
- * ### .getConstructorName(errorLike)
- *
- * Gets the constructor name for an Error instance or constructor itself.
- *
- * @name getConstructorName
- * @param {Error|ErrorConstructor} errorLike
- * @namespace Utils
- * @api public
- */
-
-function getConstructorName(errorLike) {
-  var constructorName = errorLike;
-  if (errorLike instanceof Error) {
-    constructorName = getFunctionName(errorLike.constructor);
-  } else if (typeof errorLike === 'function') {
-    // If `err` is not an instance of Error it is an error constructor itself or another function.
-    // If we've got a common function we get its name, otherwise we may need to create a new instance
-    // of the error just in case it's a poorly-constructed error. Please see chaijs/chai/issues/45 to know more.
-    constructorName = getFunctionName(errorLike).trim() ||
-        getFunctionName(new errorLike()); // eslint-disable-line new-cap
-  }
-
-  return constructorName;
-}
-
-/**
- * ### .getMessage(errorLike)
- *
- * Gets the error message from an error.
- * If `err` is a String itself, we return it.
- * If the error has no message, we return an empty string.
- *
- * @name getMessage
- * @param {Error|String} errorLike
- * @namespace Utils
- * @api public
- */
-
-function getMessage(errorLike) {
-  var msg = '';
-  if (errorLike && errorLike.message) {
-    msg = errorLike.message;
-  } else if (typeof errorLike === 'string') {
-    msg = errorLike;
-  }
-
-  return msg;
-}
-
-module.exports = {
-  compatibleInstance: compatibleInstance,
-  compatibleConstructor: compatibleConstructor,
-  compatibleMessage: compatibleMessage,
-  getMessage: getMessage,
-  getConstructorName: getConstructorName,
-};
-
-},{}],37:[function(require,module,exports){
-'use strict';
-
-/* !
- * Chai - getFuncName utility
- * Copyright(c) 2012-2016 Jake Luer <jake@alogicalparadox.com>
- * MIT Licensed
- */
-
-/**
- * ### .getFuncName(constructorFn)
- *
- * Returns the name of a function.
- * When a non-function instance is passed, returns `null`.
- * This also includes a polyfill function if `aFunc.name` is not defined.
- *
- * @name getFuncName
- * @param {Function} funct
- * @namespace Utils
- * @api public
- */
-
-var toString = Function.prototype.toString;
-var functionNameMatch = /\s*function(?:\s|\s*\/\*[^(?:*\/)]+\*\/\s*)*([^\s\(\/]+)/;
-function getFuncName(aFunc) {
-  if (typeof aFunc !== 'function') {
-    return null;
-  }
-
-  var name = '';
-  if (typeof Function.prototype.name === 'undefined' && typeof aFunc.name === 'undefined') {
-    // Here we run a polyfill if Function does not support the `name` property and if aFunc.name is not defined
-    var match = toString.call(aFunc).match(functionNameMatch);
-    if (match) {
-      name = match[1];
-    }
-  } else {
-    // If we've got a `name` property we just use it
-    name = aFunc.name;
-  }
-
-  return name;
-}
-
-module.exports = getFuncName;
-
-},{}],38:[function(require,module,exports){
-
-// expose the Iventy system
-module.exports = {
-    Emitter: require('./lib/Emitter'),
-    Event: require('./lib/Event')
-};
-
-},{"./lib/Emitter":39,"./lib/Event":40}],39:[function(require,module,exports){
-/**
- *  A class that can be used as event emitter on client and server side. An
- *  event emitter allows to register a number of callbacks that should be
- *  triggered when an event on specific channel is triggered. It's possible
- *  to distinguish channels by names.
- *
- *  @author     Paweł Kuźnik <pawel.kuznik@gmail.com>
- */
-
-// the dependencies
-const Event = require('./Event.js');
-
-// the private symbols
-const channels = Symbol('channels');
-const bubbleTo = Symbol('bubbleTo');
-
-// export the class
-module.exports = class {
-
-    /**
-     *  The constructor
-     */
-    constructor () {
-
-        /**
-         *  A map container arrays of callbacks per callback channel.
-         *  @var    Map
-         */
-        this[channels] = new Map();
-
-        /**
-         *  An event emitter to which all events should be propagated.
-         *  @var    Emitter
-         */
-        this[bubbleTo] = null;
-    }
-
-    /**
-     *  Trigger event on the emitter.
-     *
-     *  @param  Iventy.Event    The event instance that should be triggered.
-     *  @return Iventy.Emitter  The emitter that the event was called on.
-     */
-    trigger (event) {
-
-        // od we have callbacks for the event channel?
-        if (this[channels].has(event.type)) {
-
-            // iterate over the callbacks and call them one by one
-            for(let callback of this[channels].get(event.type)) callback(event);
-        }
-
-        // should we bubble the event further? but only when it was not stopped
-        if (this[bubbleTo] && !event.isStopped) this[bubbleTo].trigger(event);
-
-        // allow chaining
-        return this;
-    };
-
-    /**
-     *  Install callback on given channel.
-     *
-     *  @param  string      The channel name.
-     *  @param  function    The callback to call when the event is triggered
-     */
-    on(name, callback) {
-
-        // ensure that we have registered the channel name
-        if (!this[channels].has(name)) this[channels].set(name, []);
-
-        // push next callback on the
-        this[channels].get(name).push(callback);
-
-        // allow chaining
-        return this;
-    }
-
-    /**
-     *  Uninstall callback on given channel.
-     *
-     *  @param  string      The channel name.
-     *  @param  function    The callback to uninstall.
-     *  @return Emitter
-     *
-     *  ---------------------------------------------
-     *
-     *  Uninstall all registered callbacks.
-     *
-     *  @return Emitter
-     */
-    off(name, callback) {
-
-        // should we uninstall a callback on specific channel? or all possible callbacks?
-        if (name) {
-
-            // do we even have a channel under this name?
-            if (!this[channels][name]) return this;
-
-            // filter the callbacks
-            this[channels].set(name, this[channels].get(name).filter(function (item) {
-
-                // allow only callabacks that we don't want to uninstall
-                return item != callback;
-            }));
-
-        // we should remove all possible callbacks
-        } else this[channels].clear();
-
-        // allow chaining
-        return this;
-    }
-
-    /**
-     *  This is a function that will allow to bubble an event to another emitter
-     *
-     *  @param  EventEmitter
-     */
-    bubbleTo(target) {
-
-        // do we have a new target to set?
-        if (typeof(target) != 'undefined') {
-
-            // set the bubble to target
-            this[bubbleTo] = target;
-
-            // allow chaining
-            return this;
-        }
-
-        // return the current bubble to
-        return this[bubbleTo];
-    }
-
-    /**
-     *  A method to create an event based on this emitter.
-     *
-     *  @param  string  The name of the channel of the event.
-     *  @param  mixed   (Optional) The object of the event.
-     *  @param  Event   (Optional) The previous event in the chain. If none
-     *                  is provided then event has no previous event.
-     *
-     *  @return Event   The constructed event.
-     */
-    createEvent(name, data = { }, previousEvent = null) {
-
-        // construct new event
-        return new Event(name, data, this, previousEvent);
-    }
-};
-
-},{"./Event.js":40}],40:[function(require,module,exports){
-/**
- *  This is a class to acompany the Emitter class. The Event has important
- *  properties:
- *
- *  type:string             The type of the event (basically the event/chanel name)
- *  data:mixed              The additional data assigned to the event.
- *  target:Emitter          The emitter that ignited the event.
- *  currentTarget:Emitter   The last emitter in bubble chaing
- *
- *  @author Paweł Kuźnik <pawel.kuznik@gmail.com>
- */
-
-// the private symbols
-const _type = Symbol('type');
-const _data = Symbol('data');
-const _target = Symbol('target');
-const _prev = Symbol('prev');
-const _prevented = Symbol('prevented');
-const _stopped = Symbol('stopped');
-
-// return the class
-module.exports = class {
-
-    /**
-     *  The constructor
-     *
-     *  @param  sting   The channel type of the event.
-     *  @param  mixed   The data associated with the event.
-     *  @param  Emitter The emitter that triggers this event.
-     *  @param  Event   The previous event in chain that lead to this event.
-     */
-    constructor(type, data, target = null, prevEvent = null) {
-
-        // assign the basic data
-        this[_type] = type;
-        this[_data] = data;
-        this[_target] = target;
-        this[_prev] = prevEvent;
-
-        // assign the properties
-        this[_prevented] = false;
-        this[_stopped] = false;
-    }
-
-    /**
-     *  Prevent the event.
-     *
-     *  @return Event   The prevented event.
-     */
-    prevent() {
-
-        // mark the event as prevented
-        this[_prevented] = true;
-
-        // return same event
-        return this;
-    }
-
-    /**
-     *  Is the event prevented.
-     *
-     *  @return bool
-     */
-    get isPrevented () {
-
-        // return the prevented flag
-        return this[_prevented];
-    }
-
-    /**
-     *  Stop the event
-     */
-    stop() {
-
-        // mark the event as stopped
-        this[_stopped] = true;
-
-        // allow chaining
-        return this;
-    }
-
-    /**
-     *  Is the event stopped.
-     *
-     *  @return bool
-     */
-    get isStopped () {
-
-        return this[_stopped];
-    }
-
-    /**
-     *  Return the type of the event.
-     *
-     *  @return string
-     */
-    get type () {
-
-        // return the type
-        return this[_type];
-    }
-
-    /**
-     *  The data associated with the event.
-     *
-     *  @return mixed
-     */
-    get data() {
-
-        // return the data
-        return this[_data];
-    }
-
-    /**
-     *  Get the target of the event.
-     *
-     *  @return Emitter
-     */
-    get target() {
-
-        // return the event's target
-        return this[_target];
-    }
-
-    /**
-     *  Get the previos event in the chain.
-     *  
-     *  @return Event
-     */
-    get previous() {
-
-        // return the previous event
-        return this[_prev];
-    }
-
-    /**
-     *  Create new event based on this one.
-     *
-     *  @param  string  The name of the event's channel.
-     *  @param  mixed   (Optional) The associated data.
-     *  @param  Emitter (Optional) The emitter instance that is the target of the event. If
-     *                  no target is provided, the current event target is used.
-     */
-    createEvent(name, data = { }, target = null) {
-
-        // return new event instance
-        return new this.constructor(name, data, target ? target : this.target, this);
-    }
-};
-
-},{}],41:[function(require,module,exports){
-'use strict';
-
-/* !
- * Chai - pathval utility
- * Copyright(c) 2012-2014 Jake Luer <jake@alogicalparadox.com>
- * @see https://github.com/logicalparadox/filtr
- * MIT Licensed
- */
-
-/**
- * ### .hasProperty(object, name)
- *
- * This allows checking whether an object has own
- * or inherited from prototype chain named property.
- *
- * Basically does the same thing as the `in`
- * operator but works properly with null/undefined values
- * and other primitives.
- *
- *     var obj = {
- *         arr: ['a', 'b', 'c']
- *       , str: 'Hello'
- *     }
- *
- * The following would be the results.
- *
- *     hasProperty(obj, 'str');  // true
- *     hasProperty(obj, 'constructor');  // true
- *     hasProperty(obj, 'bar');  // false
- *
- *     hasProperty(obj.str, 'length'); // true
- *     hasProperty(obj.str, 1);  // true
- *     hasProperty(obj.str, 5);  // false
- *
- *     hasProperty(obj.arr, 'length');  // true
- *     hasProperty(obj.arr, 2);  // true
- *     hasProperty(obj.arr, 3);  // false
- *
- * @param {Object} object
- * @param {String|Symbol} name
- * @returns {Boolean} whether it exists
- * @namespace Utils
- * @name hasProperty
- * @api public
- */
-
-function hasProperty(obj, name) {
-  if (typeof obj === 'undefined' || obj === null) {
-    return false;
-  }
-
-  // The `in` operator does not work with primitives.
-  return name in Object(obj);
-}
-
-/* !
- * ## parsePath(path)
- *
- * Helper function used to parse string object
- * paths. Use in conjunction with `internalGetPathValue`.
- *
- *      var parsed = parsePath('myobject.property.subprop');
- *
- * ### Paths:
- *
- * * Can be infinitely deep and nested.
- * * Arrays are also valid using the formal `myobject.document[3].property`.
- * * Literal dots and brackets (not delimiter) must be backslash-escaped.
- *
- * @param {String} path
- * @returns {Object} parsed
- * @api private
- */
-
-function parsePath(path) {
-  var str = path.replace(/([^\\])\[/g, '$1.[');
-  var parts = str.match(/(\\\.|[^.]+?)+/g);
-  return parts.map(function mapMatches(value) {
-    var regexp = /^\[(\d+)\]$/;
-    var mArr = regexp.exec(value);
-    var parsed = null;
-    if (mArr) {
-      parsed = { i: parseFloat(mArr[1]) };
-    } else {
-      parsed = { p: value.replace(/\\([.\[\]])/g, '$1') };
-    }
-
-    return parsed;
-  });
-}
-
-/* !
- * ## internalGetPathValue(obj, parsed[, pathDepth])
- *
- * Helper companion function for `.parsePath` that returns
- * the value located at the parsed address.
- *
- *      var value = getPathValue(obj, parsed);
- *
- * @param {Object} object to search against
- * @param {Object} parsed definition from `parsePath`.
- * @param {Number} depth (nesting level) of the property we want to retrieve
- * @returns {Object|Undefined} value
- * @api private
- */
-
-function internalGetPathValue(obj, parsed, pathDepth) {
-  var temporaryValue = obj;
-  var res = null;
-  pathDepth = (typeof pathDepth === 'undefined' ? parsed.length : pathDepth);
-
-  for (var i = 0; i < pathDepth; i++) {
-    var part = parsed[i];
-    if (temporaryValue) {
-      if (typeof part.p === 'undefined') {
-        temporaryValue = temporaryValue[part.i];
-      } else {
-        temporaryValue = temporaryValue[part.p];
-      }
-
-      if (i === (pathDepth - 1)) {
-        res = temporaryValue;
-      }
-    }
-  }
-
-  return res;
-}
-
-/* !
- * ## internalSetPathValue(obj, value, parsed)
- *
- * Companion function for `parsePath` that sets
- * the value located at a parsed address.
- *
- *  internalSetPathValue(obj, 'value', parsed);
- *
- * @param {Object} object to search and define on
- * @param {*} value to use upon set
- * @param {Object} parsed definition from `parsePath`
- * @api private
- */
-
-function internalSetPathValue(obj, val, parsed) {
-  var tempObj = obj;
-  var pathDepth = parsed.length;
-  var part = null;
-  // Here we iterate through every part of the path
-  for (var i = 0; i < pathDepth; i++) {
-    var propName = null;
-    var propVal = null;
-    part = parsed[i];
-
-    // If it's the last part of the path, we set the 'propName' value with the property name
-    if (i === (pathDepth - 1)) {
-      propName = typeof part.p === 'undefined' ? part.i : part.p;
-      // Now we set the property with the name held by 'propName' on object with the desired val
-      tempObj[propName] = val;
-    } else if (typeof part.p !== 'undefined' && tempObj[part.p]) {
-      tempObj = tempObj[part.p];
-    } else if (typeof part.i !== 'undefined' && tempObj[part.i]) {
-      tempObj = tempObj[part.i];
-    } else {
-      // If the obj doesn't have the property we create one with that name to define it
-      var next = parsed[i + 1];
-      // Here we set the name of the property which will be defined
-      propName = typeof part.p === 'undefined' ? part.i : part.p;
-      // Here we decide if this property will be an array or a new object
-      propVal = typeof next.p === 'undefined' ? [] : {};
-      tempObj[propName] = propVal;
-      tempObj = tempObj[propName];
-    }
-  }
-}
-
-/**
- * ### .getPathInfo(object, path)
- *
- * This allows the retrieval of property info in an
- * object given a string path.
- *
- * The path info consists of an object with the
- * following properties:
- *
- * * parent - The parent object of the property referenced by `path`
- * * name - The name of the final property, a number if it was an array indexer
- * * value - The value of the property, if it exists, otherwise `undefined`
- * * exists - Whether the property exists or not
- *
- * @param {Object} object
- * @param {String} path
- * @returns {Object} info
- * @namespace Utils
- * @name getPathInfo
- * @api public
- */
-
-function getPathInfo(obj, path) {
-  var parsed = parsePath(path);
-  var last = parsed[parsed.length - 1];
-  var info = {
-    parent: parsed.length > 1 ? internalGetPathValue(obj, parsed, parsed.length - 1) : obj,
-    name: last.p || last.i,
-    value: internalGetPathValue(obj, parsed),
-  };
-  info.exists = hasProperty(info.parent, info.name);
-
-  return info;
-}
-
-/**
- * ### .getPathValue(object, path)
- *
- * This allows the retrieval of values in an
- * object given a string path.
- *
- *     var obj = {
- *         prop1: {
- *             arr: ['a', 'b', 'c']
- *           , str: 'Hello'
- *         }
- *       , prop2: {
- *             arr: [ { nested: 'Universe' } ]
- *           , str: 'Hello again!'
- *         }
- *     }
- *
- * The following would be the results.
- *
- *     getPathValue(obj, 'prop1.str'); // Hello
- *     getPathValue(obj, 'prop1.att[2]'); // b
- *     getPathValue(obj, 'prop2.arr[0].nested'); // Universe
- *
- * @param {Object} object
- * @param {String} path
- * @returns {Object} value or `undefined`
- * @namespace Utils
- * @name getPathValue
- * @api public
- */
-
-function getPathValue(obj, path) {
-  var info = getPathInfo(obj, path);
-  return info.value;
-}
-
-/**
- * ### .setPathValue(object, path, value)
- *
- * Define the value in an object at a given string path.
- *
- * ```js
- * var obj = {
- *     prop1: {
- *         arr: ['a', 'b', 'c']
- *       , str: 'Hello'
- *     }
- *   , prop2: {
- *         arr: [ { nested: 'Universe' } ]
- *       , str: 'Hello again!'
- *     }
- * };
- * ```
- *
- * The following would be acceptable.
- *
- * ```js
- * var properties = require('tea-properties');
- * properties.set(obj, 'prop1.str', 'Hello Universe!');
- * properties.set(obj, 'prop1.arr[2]', 'B');
- * properties.set(obj, 'prop2.arr[0].nested.value', { hello: 'universe' });
- * ```
- *
- * @param {Object} object
- * @param {String} path
- * @param {Mixed} value
- * @api private
- */
-
-function setPathValue(obj, path, val) {
-  var parsed = parsePath(path);
-  internalSetPathValue(obj, val, parsed);
-  return obj;
-}
-
-module.exports = {
-  hasProperty: hasProperty,
-  getPathInfo: getPathInfo,
-  getPathValue: getPathValue,
-  setPathValue: setPathValue,
-};
-
-},{}],42:[function(require,module,exports){
-/**
- *  This is a class describing a component. A component is a part of the UI.
- *  As a part of the UI it expose an element to use as it's representation.
- *  This element can be accessed via .elem property.
- *
- *  The Component class can be initalized with following options:
- *
- *      elem:DOMElement The element that should be used as the component's
- *                      element. By passing a custom element to the constructor
- *                      you also pass the ownership of that element to the
- *                      component. This means that component will modify and
- *                      remove (if needed) the element during it's lifecycle.
- *
- *                      (Default: <div>)
- *
- *      template:string This path to a template that should be loaded into
- *                      the component. The file behind the path should
- *                      contain a HTML inside.
- *
- *                      When the template is loaded the .ready() promise
- *                      is resolved.
- *
- *                      (Default: null)
- *
- *  This Component class can emmit following events:
- *
- *  @event  removed     This event emmits when the component was removed
- *                      and should not be used further.
- *
- *  @author     Paweł Kuźnik <pawel.kuznik@gmail.com>
- */
-
-// get the dependencies
-const EventHandlers = require('./EventHandlers.js');
-const Template = require('./Template.js');
-
-// the privates
-const elem = Symbol('elem');
-const template = Symbol('template');
-const adopted = Symbol('adopted');
-const adoptedRemovedHandler = Symbol('adoptedRemovedHandler');
-
-// export the class
-const Component = class extends EventHandlers.Emitter {
-
-    /**
-     *  The constructor.
-     *
-     *  @param  object  @see the file-level docblock
-     */
-    constructor(inits = { }) {
-
-        // construct the base class
-        super();
-
-        /**
-         *  The element housing the component in the DOM tree.
-         *  @var    HTMLElement
-         */
-        this[elem] = inits.elem || document.createElement('DIV');
-
-        /**
-         *  Possible template of this component.
-         *  @var    Template
-         */
-        this[template] = null;
-
-        /**
-         *  A set of adopted components.
-         *  @var    Set
-         */
-        this[adopted] = new Set();
-
-        /**
-         *  A handler to react on when an adopted component is removed.
-         *  @var    function
-         */
-        this[adoptedRemovedHandler] = event => {
-
-            // release the event target (the adopted component)
-            this.release(event.target);
-        };
-
-        // should we load a template into our component?
-        if(inits.template) {
-            
-            // construct a template
-            this[template] = new Template(inits.template);
-
-            // tell the template to arrive to our element
-            this[template].arrivesTo(this.elem);
-        }
-    }
-
-    /**
-     *  Get access to the component's elements.
-     *  @return DOMElement
-     */
-    get elem () { return this[elem]; }
-
-    /**
-     *  Get access to the component's content element. This is an element that
-     *  other things can use to add more content. In many cases it's the same
-     *  element as the `.elem`, but derived components might change it.
-     *  @return DOMElement
-     */
-    get content() { return this.elem; }
-
-    /**
-     *  A component is a thenable object. This promise resolves when
-     *  the component is fully loaded. If the component is removed before
-     *  if can be initialized the promise is rejected.
-     *  @return Promise
-     */
-    then(successCallback, failureCallback) {
-
-        // if we do have the template promise we would like to return a new one
-        if (this[template]) return this[template].then(successCallback, failureCallback);
-
-        // create a resolved promise, cause we never neded to load a template
-        let promise = new Promise((resolve, reject) => { resolve(); });
-
-        // return the resolved promise
-        return promise.then(successCallback, failureCallback);
-    }
-
-    /**
-     *  Adopting a component transfer the cleanup responsibity to the adopter.
-     *  This means that you don't need to call the remove method on the adoptee.
-     *  @param  Component   The component to adopt.
-     *  @return Component   The adopted component.
-     */
-    adopt(component) {
-
-        // add the component to the adopted ones
-        this[adopted].add(component);
-
-        // install a removed handler
-        component.on('removed', this[adoptedRemovedHandler]);
-
-        // return the same component
-        return component;
-    }
-
-    /**
-     *  Releasing a component means to give up the responsibility to remove
-     *  the adopted component.
-     *  @param  Component   The component to release.
-     *  @return Component   The released component.
-     */
-    release(component) {
-
-        // install a removed handler
-        component.off('removed', this[adoptedRemovedHandler]);
-
-        // release the component
-        this[adopted].delete(component);
-    
-        // return the component
-        return component;
-    }
-
-    /**
-     *  Append a component or an element to this component.
-     *  @param  Component|Element
-     *  @return Component
-     */
-    append(child) {
-
-        // if we are dealing with a component we want to append the component element to our
-        if (child instanceof Component) this.content.appendChild(child.elem);
-
-        // if we are dealing with an element we want to append the element like that
-        if (child instanceof Element) this.content.appendChild(child);
-
-        // allow chaining
-        return this;
-    }
-
-    /**
-     *  Append the component to an another componet or an element.
-     *  @param  Component|Element
-     *  @return Component
-     */
-    appendTo(target) {
-
-        // if we are dealing with a component we want to append our element to the component element
-        if (target instanceof Component) target.content.appendChild(this.elem);
-
-        // if we are dealing with an element, we just want to append our element to it
-        if (target instanceof Element) target.appendChild(this.elem);
-
-        // allow chaining
-        return this;
-    }
-
-    /**
-     *  Remove the component.
-     */
-    remove() {
-
-        // remove all of the adopted components
-        for (let component of this[adopted]) {
-
-            // remove the component
-            component.remove();
-
-            // forget about the component
-            this.release(component);
-        }
-
-        // was the component already removed? then do nothing
-        if (!this[elem]) return;
-
-        // if we have a template promise we should abort it at this time
-        if (this[template]) this[template].abort();
-
-        // remove the element
-        this[elem].remove();
-        this[elem] = null;
-
-        // trigger the removed event
-        this.triggerer.triggerEvent('removed');
-
-        // remove all event handlers. At this point they are meaningless
-        this.off();
-    }
-};
-
-// export the class
-module.exports = Component;
-
-},{"./EventHandlers.js":45,"./Template.js":48}],43:[function(require,module,exports){
-/**
- *  This is a container class that that enables mounting various components
- *  inside it.
- *
- *  This component triggers following events:
- *
- *  @event      installed   This event triggers when a new component is installed
- *                          inside the container.
- *
- *  @event      cleared     This event triggers when component was clear from
- *                          a current instance.
- *
- *  The Container class can be initalized with following options:
- *
- *      elem:DOMElement The element that should be used as the containers's
- *                      element. By passing a custom element to the constructor
- *                      you also pass the ownership of that element to the
- *                      component. This means that component will modify and
- *                      remove (if needed) the element during it's lifecycle.
- *
- *                      (Default: <div>)
- *  @author     Pawel Kuznik <pawel.kuznik@gmail.com>
- */
-
-// the depencies
-const Component = require('./Component.js');
-
-// the privates
-const current = Symbol('current');
-
-// export the class
-module.exports = class extends Component {
-
-    /**
-     *  The constructor
-     *
-     *  @param  see file-level doc block
-     */
-    constructor(params = { }) {
-
-        // construct the parent class and pass some of the parameters to the parent class
-        super({
-            elem:   params.elem
-        });
-
-        /**
-         *  The currently installed component.
-         *  @var    Component
-         */
-        this[current] = null;
-    }
-
-    /**
-     *  Get the currently installed component.
-     *  @return Component
-     */
-    get current() {
-
-        // return the the currently installed component
-        return this[current];
-    }
-
-    /**
-     *  Install a new widget inside the container.
-     */
-    install(Widget, ...args) {
-
-        // is there something installed?
-        if (this[current]) this[current].remove();
-
-        // construct new widget
-        this[current] = this.adopt(new Widget(...args));
-        this.elem.appendChild(this[current].elem);
-
-        // trigger cleared event
-        this.triggerer.triggerEvent('added');
-
-        // install an onremoved handler to clear the container when
-        // the current component is removed
-        this[current].on('removed', () => {
-
-            // clear the container
-            this.clear();
-        });
-
-        // allow chaining
-        return this[current];
-    }
-
-    /**
-     *  Remove the currently installed component.
-     */
-    clear() {
-
-        // no current? we can leap out 
-        if (!this[current]) return this;
-
-        // do we have a current component installed?
-        this.release(this[current]).remove();
-
-        // reset the variable
-        this[current] = null;
-
-        // trigger cleared event
-        this.triggerer.triggerEvent('cleared');
-
-        // allow chaining
-        return this;
-    }
-};
-
-},{"./Component.js":42}],44:[function(require,module,exports){
-/**
- *  This is a function that allows for creating an DOM element in a very quick
- *  and easy way.
- *
- *  @param  string  The tag name of the element. It should be capitalized.
- *  @param  object  A key-value object of attributes to assign to the element.
- *  @return Element The element to create.
- */
-module.exports = function(tagName, attrs = { }) {
-
-    // create the element
-    const element = document.createElement(tagName);
-
-    // itarate over the attributes
-    for(let attr in attrs) {
-
-        // set the attribute
-        element.setAttribute(attr, attrs[attr]);
-    }
-
-    // return the element
-    return element;
-};
-
-},{}],45:[function(require,module,exports){
-/**
- *  This is a thin wrapper around Iventy.Emitter class that allows to be used a
- *  internal instance for the event handlers/emitters for a component.
- *  
- *  @author     Pawel Kuznik <pawel.kuznik@gmail.com>
- */
-
-// get the dependency
-const BaseEmitter = require('iventy').Emitter;
-const Event = require('iventy').Event;
-
-// the private symbols
-const emitter = Symbol('emitter');
-
-/**
- *  This is a class that exposes the emitting part of the event interface.This is
- *  meant to be used as a base class or in public interface.
- */
-const Emitter = class {
-
-    /**
-     *  The constructor.
-     */
-    constructor() {
-    
-        /**
-         *  The actual event system emitter.
-         *  @var    Iventy.Emitter
-         */
-        this[emitter] = new BaseEmitter();
-    }
-
-    /**
-     *  Install a new event handler.
-     *  @param  variadic    Look into Iventy.Emitter.on() for mode info.
-     */
-    on(...args) {
-
-        // the same signature, so we can pass the arguments just like that
-        this[emitter].on(...args);
-
-        // allow chaining
-        return this;
-    }
-
-    /**
-     *  Uninstall an event handler.
-     *  @param  variadic    Look into Iventy.Emitter.on() for mode info.
-     */
-    off(...args) {
-
-        // the same signature, so we can pass the arguments just like that
-        this[emitter].off(...args);
-
-        // allow chaining
-        return this;
-    }
-
-    /**
-     *  Bubble events to a new target.
-     *  @param  variadic    Look into Iventy.Emitter.on() for mode info.
-     */
-    bubbleTo(...args) {
-
-        // the same signature, so we can pass the arguments just like that
-        this[emitter].bubbleTo(...args);
-
-        // allow chaining
-        return this;
-    }
-
-    /**
-     *  Get access to the events triggerer.
-     *  @return Triggerer
-     */
-    get triggerer() {
-
-        // return new triggerer
-        return new Triggerer(this);
-    }
-};
-
-/**
- *  This is a class that exposes the triggering part of the event interface.This
- *  class works in pair with the EventEmitter and it need to be instantiated with
- *  that emitter insteance.
- */
-const Triggerer = class {
-
-    /**
-     *  The constructor.
-     *
-     *  @param  EventEmitter
-     */
-    constructor(parentEmitter) {
-
-        /**
-         *  The emitter instance.
-         *  @var    Emitter
-         */
-        this[emitter] = parentEmitter;
-    }
-    
-    /**
-     *  Trigger an event.
-     */
-    trigger(...args) {
-        
-        // trigger an event
-        this[emitter][emitter].trigger(...args);
-
-        // allow chaining
-        return this;
-    }
-
-    /**
-     *  A shorthand for this.trigger(this.createEvent))
-     */
-    triggerEvent(...args) {
-    
-        // trigger the event
-        this.trigger(this.createEvent(...args));
-
-        // allow chaining
-        return this;
-    }
-
-    /**
-     *  Create a new event instance.
-     */
-    createEvent(name, data = { }, previousEvent = null) {
-
-        // create a new event
-        return new Event(name, data, this[emitter], previousEvent);
-    }
-};
-
-// expose the classes
-module.exports = {
-    Emitter:    Emitter,
-    Triggerer:  Triggerer
-};
-
-
-},{"iventy":38}],46:[function(require,module,exports){
-/**
- *  This is a form class. This class abstracts a regular HTML form element 
- *  and provides a series of methods to manager output of a form. 
- *
- *  This component fires following events:
- *
- *  @event  submit      This event triggers when a user submits a form somehow.
- *
- *  @event  submitted   This event triggers when the form is submitted by an
- *                      user or API. This event trigger after the submit processing
- *                      is done.
- *
- *  @author Paweł Kuźnik <pawel.kuznik@gmail.com>
- */
-
-// the dependencies
-const Component = require('./Component.js');
-const form = require('./form.js');
-const object = require('./object.js');
-
-// the data of the form
-const data = Symbol('data');
-
-// export the class
-module.exports = class extends Component {
-
-    /**
-     *  The constructor of the form.
-     *
-     *  @param  object  The options object. It supports all Component
-     *                  options and additional one:
-     *
-     *                  data:object     An initial object to fill the form with.
-     */
-    constructor(inits = { }) {
-
-        // construct base object
-        super(Object.assign({ }, {
-            elem:   document.createElement('form')
-        }, inits));
-
-        /**
-         *  An actual object might be bound to the form. This allows to have
-         *  an form to data binding. The form later on can be asked to update
-         *  itself or to push the current data on the object.
-         *
-         *  @var    object
-         */
-        this[data] = inits.data || { };
-
-        // install an on submit handler
-        this.elem.addEventListener('submit', event => {
-
-            // no default handling
-            event.preventDefault();
-
-            // create our submit event
-            let submitEvent = this.triggerer.createEvent('submit');
-
-            // trigger the event
-            this.triggerer.trigger(submitEvent);
-
-            // was the event prevented?
-            if (submitEvent.isPrevented) return;
-
-            // submit the form
-            this.submit();
-        });
-
-        // if we can initialize the form we can do this
-        if (inits.data) {
-         
-            // when the component is ready we want to fill the form with initial
-            // data set.
-            this.then(() => {
-                this.fill(inits.data);
-            });
-        }
-    }
-
-    /**
-     *  Get access to current data.
-     *  @return object
-     */
-    get data() {
-
-        // return current data object
-        return this[data];
-    }
-
-    /**
-     *  Push current form state to the data object.
-     *  @return Form
-     */
-    push() {
-
-        // push the data on the object
-        this.assign(this.data);
-
-        // allow chaining
-        return this;
-    }
-
-    /**
-     *  Pull data from the data object to the form.
-     *  @return Form
-     */
-    pull() {
-
-        // reset the form
-        this.elem.reset();
-
-        // fill the form with current data object
-        this.fill(this.data);
-
-        // allow chaining
-        return this;
-    }
-
-    /**
-     *  Fill the form with a fresh data.
-     *  @param  object
-     *  @return Form    The object to chain.
-     */
-    fill(newData) {
-
-        // get all the inputs, textareas, or selects to fill with with data
-        // from the object.
-        let inputs = this.elem.querySelectorAll('input, textarea');
-
-        // @todo support checkboxes and radio buttons.
-        // @todo support select
-
-        // iterate over the inputs
-        for (let input of inputs) {
-
-            // get data from the object by value
-            let value = object.get(newData, input.getAttribute('name'));
-
-            // undefined value? then we want to remove the value all together
-            if (typeof(value) == 'undefined') input.removeAttribute('value');
-
-            // we area dealing with a text or text-like value
-            else {
-
-                // if the value is null or undefined, then we want to assign
-                // empty string to the actual element
-                if (value == null || typeof(value) == 'undefined') input.value = '';
-
-                // assign a string version of the value
-                else input.setAttribute('value', value);
-            }
-        }
-
-        // allow chaining
-        return this;
-    }
-
-    /**
-     *  Apply the form data on a specific object. This is useful when a form
-     *  is dealing with object to be assigned and then updated by the form.
-     *  The target object will be assigned with the data from the form.
-     *
-     *  @param  object  The target object to assign the form data.
-     *  @return Form    Chained object
-     */
-    assign(target) {
-
-        // set get the plain data
-        let plainData = form.toJSON(this.elem);
-
-        // assign all data with the accessor
-        for(let key in plainData) object.set(target, key, plainData[key]);
-
-        // allow chaining
-        return this;
-    }
-
-    /**
-     *  Submit the form. This method make a programatic submit and does not
-     *  force the element to submit. This method can be overriden to provide
-     *  specific submit behavior. Event in such case, parent method shoud be
-     *  called to maintain the 'submitted' event call.
-     *
-     *  @return Form
-     */
-    submit() {
-
-        // push the current state of the form to the data object
-        this.push();
-
-        // trigger the submitted event
-        this.triggerer.triggerEvent('submitted');
-
-        // allow chaining
-        return this;
-    }
-};
-
-},{"./Component.js":42,"./form.js":49,"./object.js":52}],47:[function(require,module,exports){
-/**
- *  This is a class that allows to create a simple list of components. This list
- *  holds the instance of the components installed here and properly bubbles all
- *  events to one common point.
- *
- *  In addition to standard Component events and the events related to the children
- *  of the list this component triggers following events:
- *
- *  @event      added       This event triggers when a new component is added to
- *                          the list.
- *
- *  @event      deleted     This event triggers when a component is deleted from
- *                          the list.
- *
- *  @author     Pawel Kuznik <pawel.kuznik@gmail.com>
- */
-
-// get the dependencies
-const Component = require('./Component.js');
-
-// the privates
-const components = Symbol('components');
-const removedHandler = Symbol('removedHandler');
-
-// export the class
-module.exports = class extends Component { 
-
-    /**
-     *  The constructor
-     *
-     *  @param  object  @see the Component documentation.
-     */
-    constructor(inits = { }) {
-
-        // call the parent constructor
-        super(inits);
-
-        /**
-         *  The list of component housed inside this list.
-         *  @var    Set
-         */
-        this[components] = new Set();
-
-        /**
-         *  A special event handler for when a list component is removed.
-         *
-         *  @param  Iventy.Event    The removed event.
-         */
-        this[removedHandler] = event => {
-
-            // not our component
-            if (!this[components].has(event.target)) return;
-
-            // remove the target from us
-            this.delete(event.target);
-        }
-    }
-
-    /**
-     *  Constuct a new component inside this list.
-     *
-     *  @param  constructor     A Component's constructor.
-     *  @param  variadic        A list of parameters to the constructor.
-     *  @return Component       The added item.
-     */
-    add(Component, ...args) {
-
-        // construct the component
-        let component = new Component(...args);
-
-        // we want to remember the component for later use
-        this[components].add(component);
-
-        // add the component element to the list element
-        this.content.appendChild(component.elem);
-
-        // if the component is removed, then we want to remove it from the list also.
-        component.on('removed', this[removedHandler]);
-
-        // tell others that a list item was removed
-        this.triggerer.triggerEvent('added', { item: component });
-
-        // return the added item
-        return component;
-    }
-
-    /**
-     *  Delete a component from the list. The component should be one of the components
-     *  created with the .add() method. If not one of them, then this method has no effect.
-     *
-     *  @param  Component   The component to remove from the list.
-     *  @return List.
-     */
-    delete(component) {
-
-        // not our component? skip processing
-        if (!this[components].has(component)) return this;
-
-        // stop listening to the removed handler
-        component.off('removed', this[removedHandler]);
-
-        // remove the component from our list
-        this[components].delete(component);
-
-        // .removeChild() may throw
-        try
-        {
-            // try to remove the child
-            this.content.removeChild(component.elem);
-
-            // tell others that a list item was removed
-            this.triggerer.triggerEvent('deleted', { item: component });
-        }
-
-        // the component was not a child of our list. Everything is ok.
-        catch(e) { }
-
-        // allow chaining
-        return this;
-    }
-
-    /**
-     *  Clear the list out of all components.
-     *
-     *  @return List
-     */ 
-    clear() {
-
-        // iterate over the list and delete each component
-        for(let c of this) this.delete(c);
-
-        // allow chaining
-        return this;
-    }
-
-    /**
-     *  Get access to installed components.
-     *
-     *  @return Array
-     */
-    get components () {
-
-        // return the components
-        return Array.from(this[components]);
-    }
-
-    /**
-     *  Get the iterator so it's possible to go through the list.
-     */
-    * [Symbol.iterator] () {
-    
-        // yield all the components.
-        for (let component of this[components]) yield component;
-    }
-};
-
-},{"./Component.js":42}],48:[function(require,module,exports){
-/** 
- *  This is a class describing a HTML template fetched from an URL. The class is
- *  a thenable object cause it manages data fetched from a server under a specific
- *  URL.
- *
- *  This class only manages the template resource (not the usage of lifecycle of
- *  the actual content), but it can be told to make a copy of the template and
- *  insert it to a specific HTML element. Use arrivesTo() method to do it asynchronously.
- *
- *  @author     Pawel Kuznik <pawel.kuznik@gmail.com>
- */
-
-// the privates
-const controller = Symbol('controller');
-const promise = Symbol('promise');
-
-// export the class
-module.exports = class {
-
-    /**
-     *  The constructor.
-     *  @param  string  The url of the template.
-     */
-    constructor(url) {
-
-        /**
-         *  Construct an abort controller.
-         *  @var    AbortController
-         */
-        this[controller] = new AbortController();
-
-        // the abort signal
-        const signal = this[controller].signal;
-
-        /**
-         *  The promise that fetches the template content.
-         *  @var    Promise
-         */
-        this[promise] = fetch(url, { signal }).then(response => response.text());
-    }
-
-    /**
-     *  A template is a thenable object as it represents a resource that
-     *  potentially will be fetched from the server.
-     *
-     *  @param  function    success callback
-     *  @param  function    failure callback
-     */
-    then(success, failure) {
-        
-        // install callbacks
-        return this[promise].then(success, failure);
-    }
-
-    /**
-     *  Make a copy of the template to arrive to a specific HTML element.
-     *
-     *  @param  HTMLElement     The element that should get a copy of the template.
-     *  @return Promise         A promise resolved when the template copy is in the
-     *                          target element.
-     */
-    arrivesTo(target) {
-
-        // await the promise and add the HTML to the target
-        return this[promise].then(html => {
-
-            // construct a template element so we can parse the html
-            let template = document.createElement('template');
-
-            // assign the string to the template
-            template.innerHTML = html;
-
-            // adopt all children
-            let child;
-            while(child = template.content.firstElementChild) target.appendChild(target.ownerDocument.adoptNode(child));
-
-            // we can remove the template element
-            template.remove();
-        });
-    }
-
-    /**
-     *  Abort the template object.
-     */
-    abort() {
-
-        // make an abort
-        this[controller].abort();
-    }
-};
-
-},{}],49:[function(require,module,exports){
-/**
- *  This is a class that holds the interface for the form module
- *
- *  @author     Pawel Kuznik <pawel.kuznik@gmail.com>
- */
-
-// this is the interface of form module
-module.exports = {
-    fromJSON:   require('./form/fromJSON.js'),
-    toJSON:     require('./form/toJSON.js')
-};
-
-},{"./form/fromJSON.js":50,"./form/toJSON.js":51}],50:[function(require,module,exports){
-/**
- *  This is a helper function to fill a form element with data from a JSON object.
- *  The JSON object should be a KEY-VALUE representation of the inputs in the form.
- *
- *  @author     Pawel Kuznik <pawel.kuznik@gmail.com>
- */
-
-/**
- *  The actual function.
- *  @param  HTMLElement     The FORM element
- *  @param  object          The object that should be iterated and assigned to a form.
- */
-module.exports = function (form, data) {
-
-    // iterate over the data and set the values one by one
-    for (let property in data) {
-
-        // fetch the first element with give name
-        let input = form.querySelector('[name="' + property + '"]');
-
-        // no found? skip it
-        if (!input) continue;
-
-        // set the input value
-        input.value = (typeof(data[property] != 'undefined') && data[property] != null) ? data[property] : '';
-    }
-};
-
-},{}],51:[function(require,module,exports){
-/**
- *  This is a function that allows to cast a form element to a JSON object.
- *  This function is primarly intended to create a REST API friendly representation
- *  of form data.
- *
- *  @author     Pawel Kuznik <pawel.kuznik@gmail.com>
- */
-
-/**
- *  The function
- *  @param  HTMLElement     The form element to serialize to an JSON object
- *  @return object          The object with form data.
- */
-module.exports = function(element) {
-
-    // get the form data of a form
-    let data = new FormData(element);
-
-    // an object that we will use to store the data
-    let parsed = { };
-
-    // iterate over the form data and assign the recognized
-    // data to the parsed object
-    for(let [key, value] of data) parsed[key] = value;
-
-    // return the parsed object
-    return parsed;
-};
-
-},{}],52:[function(require,module,exports){
-/**
- *  A file to expose the interface of object module.
- *
- *  @author     Pawel Kuznik <pawel.kuznik@gmail.com>
- */
-
-// expose the API
-module.exports = {
-    get:        require('./object/get.js'),
-    set:        require('./object/set.js'),
-    deflate:    require('./object/deflate.js')
-};
-
-},{"./object/deflate.js":53,"./object/get.js":54,"./object/set.js":55}],53:[function(require,module,exports){
-/**
- *  @author     Paweł Kuźnik <pawel.kuznink@gmail.com>
- */
-
-const scanObject = (object, prefix = null) => {
-
-    // the result object
-    let result = { };
-
-    // iterate over the object
-    for(let prop in object) {
-
-        // compute the property
-        let property = prefix ? prefix + prop : prop;
-
-        // an object or an array? then we can descend further
-        if (typeof(object[prop]) == 'object' || typeof(object[prop]) == 'array') {
-
-            // assign result of the deeper scan to the result
-            Object.assign(result, scanObject(object[prop], property + '.'));
-        }
-
-        // assign the value
-        else result[property] = object[prop];
-    }
-
-    // return the result
-    return result;
-}
-
-/**
- *  The imlpementation of the function.
- *  @param  object  The object to scan and get all the properties.
- *  @return object  The resulting object.
- */
-module.exports = function(object) {
-
-    // the algorithm for scaning is a recursive algorithm, so we call it here
-    return scanObject(object);
-};
-
-},{}],54:[function(require,module,exports){
-/**
- *  This is a function that allow to access a certain property in an object by
- *  a string of keys separated by a dot. An accessor string.
- *
- *  @author Pawel Kuznik <pawel.kuznik@gmail.com>
- */
-
-/**
- *  The function.
- *  @param  object  The object to access
- *  @param  string  The accessor string
- */
-module.exports = function (object, accessor) {
-
-    // variables that we will need
-    let property, properties = accessor.split('.');
-
-    // try to get deep into object
-    while(property = properties.shift()) {
-
-        // we don't have the property, so nothing to fetch
-        if (!(property in object)) return undefined;
-
-        // descend further
-        object = object[property];
-    }
-
-    // return the final thing
-    return object;
-};
-
-},{}],55:[function(require,module,exports){
-/**
- *  This is a function that allows setting a property on an object.
- *
- *  @author     Pawel Kuznik <pawel.kuznik@gmail.com>
- */
-
-/**
- *  The function
- *  @param  object  The object to set the property on.
- *  @param  string  The accessor string.
- *  @param  mixed   The new value to set the property on.
- */
-module.exports = function(object, accessor, value) {
-
-    // split the accessor
-    let properties = accessor.split('.');
-    let last = properties.pop();
-
-    // try to get deep into object
-    while(property = properties.shift()) {
-
-        // we don't have the property, so nothing to fetch
-        if (!(property in object)) object[property] = { };
-
-        // descend further
-        object = object[property];
-    }
-
-    // set the value
-    object[last] = value;
-};
-
-},{}],56:[function(require,module,exports){
-/**
- *  This is a file that exports the public interface of the library.
- *
- *  @author     Pawel Kuznik <pawel.kuznik@gmail.com>
- */
-
-// this is the public interface of the library
-module.exports = {
-    Component:  require('./lib/Component.js'),
-    Container:  require('./lib/Container.js'),
-    Form:       require('./lib/Form.js'),
-    List:       require('./lib/List.js'),
-    form:       require('./lib/form.js'),
-    object:     require('./lib/object.js'),
-    DOM:        { createElement: require('./lib/DOM/createElement.js') }
-};
-
-},{"./lib/Component.js":42,"./lib/Container.js":43,"./lib/DOM/createElement.js":44,"./lib/Form.js":46,"./lib/List.js":47,"./lib/form.js":49,"./lib/object.js":52}],57:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
  /**
  *  This is a modal. A modal class is a class that gives an actual component
  *  a special place on the screen.
@@ -12349,8 +12349,30 @@ module.exports = {
 const sparkle   = require('sparkle');
 const Component = sparkle.Component;
 
+// the manager instance
+var manager;
+
 // export the class
 module.exports = class extends Component {
+
+    /**
+     *  Get access to an application wide modal manager.
+     *  @return ModalManager
+     */
+    static get manager() {
+
+        // do we have a manager?
+        if (manager) return manager;
+
+        // get the class
+        const ModalManager = require('./ModalManager.js');
+
+        // construct a manager
+        manager = new ModalManager();
+
+        // return the manager
+        return manager;
+    }
 
     /**
      *  The constructor.
@@ -12390,94 +12412,13 @@ module.exports = class extends Component {
     }
 };
 
-},{"sparkle":56}],58:[function(require,module,exports){
+},{"./ModalManager.js":58,"sparkle":55}],58:[function(require,module,exports){
 /**
- *  This is a modal. A modal class is a class that gives an actual component
- *  a special place on the screen.
+ *  This is a manager for various modals. This class allows for adding
+ *  more modals on top of the existing ones and closing them in a managed way.
  *
- *  @author     Pawel Kuznik <pawel.kuznik@gmail.com>
- */
-
-// the dependencies
-const Container = require('sparkle').Container;
-const Modal     = require('./Modal.js');
-
-// the symbols of private things
-const container = Symbol('container');
-const modal     = Symbol('modal');
-
-// export the class
-module.exports = class {
-
-    /**
-     *  The constructor.
-     *  @param      Component the actual component to mount inside.
-     *  @variadic   The parameters to pass to the constructor of the component.
-     */
-    constructor(Widget, ...args) {
-
-        // construct the modal
-        this[modal] = new Modal();
-
-        // install a container inside the modal element
-        this[container] = new Container({ elem: this[modal].elem });
-
-        // do we have a widget to install
-        if (Widget) this[container].install(Widget, ...args);
-    }
-
-    /**
-     *  Get access to the component installed in the modal
-     */
-    get component() {
-
-        // return the installed component
-        return this[container].current;
-    }
-
-    /**
-     *  Is the modal shown to the user?
-     */
-    get shown() {
-
-        // rely on the modal to tell this
-        return this[modal].shown;
-    }
-
-    /**
-     *  Show the modal to the user.
-     */
-    show() {
-
-        // show the modal
-        this[modal].show();
-    }
-
-    /**
-     *  Hide the modal from the user.
-     */
-    hide() {
-
-        // hide the modal
-        this[modal].hide();
-    }
-
-    /**
-     *  Remove the modal.
-     */
-    remove() {
-
-        // remove the container
-        this[container].remove();
-        
-        // remove the modal
-        this[modal].remove();
-    }
-};
-
-},{"./Modal.js":57,"sparkle":56}],59:[function(require,module,exports){
-/**
- *  This a class that allows creating modals in a manged way.
+ *  This class should not be instantiated just like that, but rather should
+ *  be accessed via `Modal.manager` property.
  */
 
 // privates
@@ -12496,9 +12437,6 @@ module.exports = class {
         this[elem] = document.createElement('DIV');
         this[elem].classList.add('modalmanager');
 
-        // append the element to the document body
-        document.body.appendChild(this[elem]);
-
         // the modals
         this[modals] = [];
     }
@@ -12515,14 +12453,46 @@ module.exports = class {
 
     /**
      *  Add a new modal instance to the manager.
+     *  @param  Modal   The modal instance to the manager.
+     *  @return Modal   The modal instance.
      */
-    add(Modal, ...args) {
-
-        // construct the new modal
-        const modal = new Modal(...args);
+    add(modal) {
 
         // push the modal
         this[modals].push(modal);
+
+        // append the modal element to our container
+        this[elem].appendChild(modal.elem);
+
+        // append the element to the document body
+        document.body.appendChild(this[elem]);
+
+        // the old remove method
+        const oldRemove = modal.remove;
+
+        // install new remove method
+        modal.remove = () => {
+
+            // get the modal index
+            const idx = this[modals].indexOf(modal);
+
+            // if we have an index of the modal item then we need to removed it from the modals array
+            if (idx > -1) this[modals].splice(idx, 1);
+
+            // remove the old remove
+            oldRemove.call(modal);
+
+            // if we don't have any modals we can remove the container element from the document
+            if (this[modals].length == 0) {
+
+                // remove the element
+                this[elem].remove();
+
+                // remove modalblur class
+                const main = document.querySelector('body > main');
+                if (main) main.classList.remove('modalblur');
+            }
+        };
 
         // return the modal
         return modal;
@@ -12530,14 +12500,44 @@ module.exports = class {
 
     /**
      *  Add a new modal and automatically show it.
+     *
+     *  Signature 1:
+     *  @param  Modal   A modal class to create inside this modal manager
+     *  @variadic       The arguments for the Modal constructor.
+     *  @return Modal   The created modal
+     *
+     *  Signature 2:
+     *  @param  Component A component class to instainatiate inside the modal.
+     *  @variadic       The arguments for the component constructor.
+     *  @return Modal   The created modal
      */
-    show(Modal, ...args) {
+    create(Widget, ...args) {
 
-        // construct new modal
-        const modal = this.add(Modal, ...args);
+        // get the modal and modal wrapper classes
+        const Modal = require('./Modal.js');
+        const ModalWrapper = require('./ModalWrapper.js');
+
+        // declare modal variable
+        let modal;
+
+        console.log(Widget);
+
+        // are we dealing with a modal or a descendant? then we can construct
+        // it like that
+        if (Modal.isPrototypeOf(Widget) || Widget == Modal) modal = new Modal(...args);
+
+        // we should wrap our custom widget inside a modal
+        else modal = new ModalWrapper(Widget, ...args);
+
+        // add the modal top the ones managed by the manager
+        this.add(modal);
 
         // show the modal
         modal.show(); 
+
+        // add a modal blur to the body
+        const main = document.querySelector('body > main');
+        if (main) main.classList.add('modalblur');
 
         // return the modal
         return modal;
@@ -12553,6 +12553,10 @@ module.exports = class {
 
         // drop references
         this[modals].length = 0;
+
+        // remove modal blur class from main element
+        const main = document.querySelector('body > main');
+        if (main) main.classList.remove('modalblur');
 
         // allow chaining
         return this;
@@ -12571,7 +12575,47 @@ module.exports = class {
     }
 };
 
-},{}],60:[function(require,module,exports){
+},{"./Modal.js":57,"./ModalWrapper.js":59}],59:[function(require,module,exports){
+/**
+ *  This is a special modal designed to wrap around a component.
+ */
+
+// the dependencies
+const Modal = require('./Modal.js');
+
+// the privates
+const component = Symbol('component');
+
+// export the class
+module.exports = class extends Modal {
+
+    /**
+     *  The constructor.
+     *  @param  Component   The component class to wrap inside a modal
+     *  @variadic           The arguments for the component constructor.
+     */
+    constructor(Widget, ...args) {
+
+        // construct the modal
+        super();
+
+        console.log('here');
+
+        // construct the component
+        this[component] = this.adopt(new Widget(...args));
+
+        // append the component
+        this.append(this[component]);
+    }
+
+    /**
+     *  Get access to the wrapped component.
+     *  @return Component
+     */
+    get component() { return this[component]; }
+};
+
+},{"./Modal.js":57}],60:[function(require,module,exports){
 /**
  *  Test case for Modal class.
  */
@@ -12633,70 +12677,6 @@ describe('common.Modal', () => {
 
 },{"../src/common/Modal.js":57,"chai":2}],61:[function(require,module,exports){
 /**
- *  Test case for Modal class.
- */
-
-// the dependencies
-const expect            = require('chai').expect;
-const Component         = require('sparkle').Component;
-const ModalContainer    = require('../src/common/ModalContainer.js');
-
-describe('common.ModalContainer', () => {
-
-    describe('.component', () => {
-
-        it('should expose a component mounted in the constructor', () => {
-
-            // construct the modal
-            const modal = new ModalContainer(Component);
-
-            // expect the property to expose a component
-            expect(modal.component).to.be.instanceof(Component);
-        });
-    });
-
-    describe('.shown', () => {
-
-        it('should initially return false cause the modal is not shown', () => {
-
-            // construct the modal
-            const modal = new ModalContainer(Component);
-
-            // check if it's not shown
-            expect(modal.shown).to.be.false;
-        });
-
-        it('should tell true after we call .show()', () => {
-
-            // construct the modal
-            const modal = new ModalContainer(Component);
-
-            // show the modal
-            modal.show();
-
-            // check if it's not shown
-            expect(modal.shown).to.be.true;
-        });
-
-        it('should tell false after we call .hide()', () => {
-
-            // construct the modal
-            const modal = new ModalContainer(Component);
-
-            // show the modal
-            modal.show();
-
-            // hide the modal
-            modal.hide();
-
-            // check if it's not shown
-            expect(modal.shown).to.be.false;
-        });
-    });
-});
-
-},{"../src/common/ModalContainer.js":58,"chai":2,"sparkle":56}],62:[function(require,module,exports){
-/**
  *  Test case for common.ModalManager class.
  */
 
@@ -12715,7 +12695,7 @@ describe('common.ModalManager', () => {
             const manager = new ModalManager();
 
             // add a modal
-            const modal = manager.add(Modal);
+            const modal = manager.add(new Modal);
 
             // expect a modal
             expect(modal).to.be.instanceof(Modal);
@@ -12727,7 +12707,7 @@ describe('common.ModalManager', () => {
             const manager = new ModalManager();
 
             // add a modal
-            manager.add(Modal);
+            manager.add(new Modal);
 
             // expect a modal
             expect(manager.size).to.be.equal(1);
@@ -12742,7 +12722,7 @@ describe('common.ModalManager', () => {
             const manager = new ModalManager();
 
             // add a modal
-            manager.add(Modal);
+            manager.add(new Modal);
 
             // clear all modals
             manager.clear();
@@ -12753,7 +12733,7 @@ describe('common.ModalManager', () => {
     });
 });
 
-},{"../src/common/Modal.js":57,"../src/common/ModalManager.js":59,"chai":2}],63:[function(require,module,exports){
+},{"../src/common/Modal.js":57,"../src/common/ModalManager.js":58,"chai":2}],62:[function(require,module,exports){
 /**
  *  This is a kickstart file for the tests. We have it like this cause we want
  *  to use our regular environment (commonjs modules compiled with browserify).
@@ -12763,7 +12743,6 @@ describe('common.ModalManager', () => {
 
 // require all tests
 require('./common.Modal.js');
-require('./common.ModalContainer.js');
 require('./common.ModalManager.js');
 
-},{"./common.Modal.js":60,"./common.ModalContainer.js":61,"./common.ModalManager.js":62}]},{},[63]);
+},{"./common.Modal.js":60,"./common.ModalManager.js":61}]},{},[62]);

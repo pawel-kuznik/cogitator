@@ -9,8 +9,30 @@
 const sparkle   = require('sparkle');
 const Component = sparkle.Component;
 
+// the manager instance
+var manager;
+
 // export the class
 module.exports = class extends Component {
+
+    /**
+     *  Get access to an application wide modal manager.
+     *  @return ModalManager
+     */
+    static get manager() {
+
+        // do we have a manager?
+        if (manager) return manager;
+
+        // get the class
+        const ModalManager = require('./ModalManager.js');
+
+        // construct a manager
+        manager = new ModalManager();
+
+        // return the manager
+        return manager;
+    }
 
     /**
      *  The constructor.

@@ -1,5 +1,9 @@
 /**
- *  This a class that allows creating modals in a manged way.
+ *  This is a manager for various modals. This class allows for adding
+ *  more modals on top of the existing ones and closing them in a managed way.
+ *
+ *  This class should not be instantiated just like that, but rather should
+ *  be accessed via `Modal.manager` property.
  */
 
 // privates
@@ -34,11 +38,10 @@ module.exports = class {
 
     /**
      *  Add a new modal instance to the manager.
+     *  @param  Modal   The modal instance to the manager.
+     *  @return Modal   The modal instance.
      */
-    add(Modal, ...args) {
-
-        // construct the new modal
-        const modal = new Modal(...args);
+    add(modal) {
 
         // push the modal
         this[modals].push(modal);
@@ -65,7 +68,15 @@ module.exports = class {
             oldRemove.call(modal);
 
             // if we don't have any modals we can remove the container element from the document
-            if (this[modals].length == 0) this[elem].remove();
+            if (this[modals].length == 0) {
+
+                // remove the element
+                this[elem].remove();
+
+                // remove modalblur class
+                const main = document.querySelector('body > main');
+                if (main) main.classList.remove('modalblur');
+            }
         };
 
         // return the modal
@@ -74,14 +85,42 @@ module.exports = class {
 
     /**
      *  Add a new modal and automatically show it.
+     *
+     *  Signature 1:
+     *  @param  Modal   A modal class to create inside this modal manager
+     *  @variadic       The arguments for the Modal constructor.
+     *  @return Modal   The created modal
+     *
+     *  Signature 2:
+     *  @param  Component A component class to instainatiate inside the modal.
+     *  @variadic       The arguments for the component constructor.
+     *  @return Modal   The created modal
      */
-    show(Modal, ...args) {
+    create(Widget, ...args) {
 
-        // construct new modal
-        const modal = this.add(Modal, ...args);
+        // get the modal and modal wrapper classes
+        const Modal = require('./Modal.js');
+        const ModalWrapper = require('./ModalWrapper.js');
+
+        // declare modal variable
+        let modal;
+
+        // are we dealing with a modal or a descendant? then we can construct
+        // it like that
+        if (Modal.isPrototypeOf(Widget) || Widget == Modal) modal = new Modal(...args);
+
+        // we should wrap our custom widget inside a modal
+        else modal = new ModalWrapper(Widget, ...args);
+
+        // add the modal top the ones managed by the manager
+        this.add(modal);
 
         // show the modal
         modal.show(); 
+
+        // add a modal blur to the body
+        const main = document.querySelector('body > main');
+        if (main) main.classList.add('modalblur');
 
         // return the modal
         return modal;
@@ -97,6 +136,10 @@ module.exports = class {
 
         // drop references
         this[modals].length = 0;
+
+        // remove modal blur class from main element
+        const main = document.querySelector('body > main');
+        if (main) main.classList.remove('modalblur');
 
         // allow chaining
         return this;

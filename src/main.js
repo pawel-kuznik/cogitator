@@ -35,7 +35,7 @@ window.Cogitator.start = function () {
         const container = new Container();
 
         // append the container to the body
-        container.appendTo(document.querySelector('body'));
+        container.appendTo(document.querySelector('main'));
 
         // define all routes
         router.append('/squads',            () => { container.install(require('./Squads.js'), templateStore); });

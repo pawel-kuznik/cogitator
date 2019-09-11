@@ -3,7 +3,17 @@ button,
 input[type="submit"]
 {
     border:     0;
+    background: slategrey;
+    color:      lightgrey;
 
-    background: cyan;
+    cursor:     pointer;
 
+    box-sizing: border-box;
+
+    padding-right:  .5rem;
+
+    padding-top:    .25rem;
+    padding-bottom: .25rem;
+
+    box-shadow:     0 0 1px var(--color-font);
 }

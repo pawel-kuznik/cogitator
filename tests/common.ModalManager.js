@@ -17,7 +17,7 @@ describe('common.ModalManager', () => {
             const manager = new ModalManager();
 
             // add a modal
-            const modal = manager.add(Modal);
+            const modal = manager.add(new Modal);
 
             // expect a modal
             expect(modal).to.be.instanceof(Modal);
@@ -29,7 +29,7 @@ describe('common.ModalManager', () => {
             const manager = new ModalManager();
 
             // add a modal
-            manager.add(Modal);
+            manager.add(new Modal);
 
             // expect a modal
             expect(manager.size).to.be.equal(1);
@@ -44,7 +44,7 @@ describe('common.ModalManager', () => {
             const manager = new ModalManager();
 
             // add a modal
-            manager.add(Modal);
+            manager.add(new Modal);
 
             // clear all modals
             manager.clear();

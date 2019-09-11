@@ -7,5 +7,4 @@
 
 // require all tests
 require('./common.Modal.js');
-require('./common.ModalContainer.js');
 require('./common.ModalManager.js');

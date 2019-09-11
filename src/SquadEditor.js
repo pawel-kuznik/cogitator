@@ -7,6 +7,7 @@
 const Component     = require('sparkle').Component;
 const Form          = require('sparkle').Form;
 const Type          = require('./SquadEditor/Type.js');
+const Models        = require('./SquadEditor/ModelsList.js');
 
 // export the class
 module.exports = class extends Component {
@@ -26,6 +27,9 @@ module.exports = class extends Component {
         // create the type input
         const typeForm = this.adopt(new Type({ data: squad }));
 
+        // create the models component
+        const models = this.adopt(new Models({ data: squad }));
+
         // wait for the component to be fully initialized
         this.then(() => {
 
@@ -40,6 +44,9 @@ module.exports = class extends Component {
 
                 // push changes from the name form
                 nameForm.push();
+
+                // push changes from the models list
+                models.push();
 
                 // and make sure the squad template is stored
                 squad.store();
@@ -70,6 +77,7 @@ module.exports = class extends Component {
             // append the name form top the div
             nameForm.appendTo(content);
             typeForm.appendTo(content);
+            models.appendTo(content);
         });
     }
 };
