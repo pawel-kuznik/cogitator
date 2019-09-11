@@ -38,7 +38,7 @@ module.exports = class extends Component {
             this.elem.querySelector('button').addEventListener('click', () => {
 
                 // construct new modal
-                const modal = Modal.manager.create(ModelEditor);
+                const modal = Modal.manager.create(ModelEditor, this[data].root.buildModel());
             });
 
             // append the 

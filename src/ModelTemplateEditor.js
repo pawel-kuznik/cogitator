@@ -3,11 +3,11 @@
  */
 
 // the dependencies
-const Component     = require('sparkle').Component;
+const Editor        = require('./Editor.js');
 const Form          = require('sparkle').Form;
 
 // export the class
-module.exports = class extends Component {
+module.exports = class extends Editor {
 
     /**
      *  The constructor.
@@ -16,16 +16,13 @@ module.exports = class extends Component {
     constructor(model) {
 
         // call the parent
-        super({ template: '/templates/editor.html' });
-
-        // the name form
-        const nameForm = this.adopt(new Form({ data: model, template: '/templates/modelForm.html' }));
-
-        // when we are ready we can make more initialization
-        this.then(() => {
-
-            // append name form
-            this.append(nameForm);
+        super({
+            data:           model,
+            createTitle:    'Create new model template',
+            editTitle:      'Edit ' + model.name + 'template'
         });
+
+        // add forms
+        this.add(Form, { template: '/templates/modelForm.html' });
     }
 };
