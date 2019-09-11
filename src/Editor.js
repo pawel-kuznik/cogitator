@@ -1,4 +1,7 @@
 /**
+ *  This is a class that creates an editor for a single entity. This editor
+ *  consists out of a title, control buttons, and a series of smaller forms
+ *  resposible for editing parts of the bigger entity.
  */
 
 // the dependencies
