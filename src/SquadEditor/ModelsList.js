@@ -8,6 +8,7 @@ const Component     = require('sparkle').Component;
 const List          = require('sparkle').List;
 const ModelEditor   = require('../ModelTemplateEditor.js');
 const Modal         = require('../common/Modal.js');
+const Item          = require('../EditorItem.js');
 
 // the privates
 const data = Symbol('data');
@@ -38,12 +39,47 @@ module.exports = class extends Component {
             this.elem.querySelector('button').addEventListener('click', () => {
 
                 // construct new modal
-                const modal = Modal.manager.create(ModelEditor, this[data].root.buildModel());
+                const modal = Modal.manager.create(ModelEditor, this[data].build());
+
+                // when the modal says that it was stored we can remove the modal
+                modal.component.on('stored', () => {
+
+                    // refresh the list
+                    this.pull();
+
+                    // remove the modal
+                    modal.remove();
+                });
+
+                // when the modal says that it was deleted we can remove the modal
+                modal.component.on('deleted', () => {
+
+                    // refresh the list
+                    this.pull();
+
+                    // remove the modal
+                    modal.remove();
+                });
             });
+
+            // make the initial pull
+            this.pull();
 
             // append the 
             this[list].appendTo(this);
         });
+    }
+
+    /**
+     *  Pull data from the data object
+     */
+    pull () {
+
+        // clear the list
+        this[list].clear();
+
+        // iterate over the data
+        for (let item of this[data]) this[list].add(Item, item);
     }
 
     push() {

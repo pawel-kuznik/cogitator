@@ -2,6 +2,12 @@
  *  This is a class that creates an editor for a single entity. This editor
  *  consists out of a title, control buttons, and a series of smaller forms
  *  resposible for editing parts of the bigger entity.
+ *
+ *  @event  stored  This event triggers when the edited entity was stored.
+ *
+ *  @event  deleted This event triggers when the edited entity was deleted.
+ *
+ *  @author Paweł Kuźnik <pawel.kuznik@gmail.com>
  */
 
 // the dependencies
@@ -52,6 +58,9 @@ module.exports = class extends Component {
                 // flush the changes
                 this[data].root.flush();
 
+                // trigger stored event
+                this.triggerer.triggerEvent('stored');
+
                 // go to the list of squads
                 if (options.listUrl) window.location.hash = options.listUrl;
             });
@@ -64,6 +73,9 @@ module.exports = class extends Component {
 
                 // flush the changes
                 this[data].root.flush();
+
+                // trigger stored event
+                this.triggerer.triggerEvent('deleted');
 
                 // go to the list of squads
                 if (options.listUrl) window.location.hash = options.listUrl;

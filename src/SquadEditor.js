@@ -29,7 +29,7 @@ module.exports = class extends Editor {
         // add parts of the editor
         this.add(Form, { template: '/templates/squadForm.html' });
         this.add(Type);
-        this.add(Models);
+        this.add(Models, { data: squad.models });
     }
 };
 
