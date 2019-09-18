@@ -3,7 +3,7 @@
  */
 
 // the dependencies
-const Editor        = require('./Editor.js');
+const Editor        = require('./common/Editor.js');
 const Form          = require('sparkle').Form;
 
 // export the class

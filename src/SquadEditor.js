@@ -5,7 +5,7 @@
 
 // the dependencies
 const Form          = require('sparkle').Form;
-const Editor        = require('./Editor.js');
+const Editor        = require('./common/Editor.js');
 const Type          = require('./SquadEditor/Type.js');
 const Models        = require('./SquadEditor/ModelsList.js');
 
