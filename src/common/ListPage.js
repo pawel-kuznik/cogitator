@@ -12,6 +12,7 @@
 const Component = require('sparkle').Component;
 const List      = require('sparkle').List;
 const Item      = require('./ListItem.js');
+const match     = require('./match.js');
 
 // the privates
 const list      = Symbol('list');
@@ -56,7 +57,7 @@ module.exports = class extends Component {
                 for (let item of this[list]) {
 
                     // if the item includes the keyword we can show the item
-                    if (item.entity.name.includes(keyword)) item.show();
+                    if (match(keyword, item.entity)) item.show();
 
                     // hide the item
                     else item.hide();
