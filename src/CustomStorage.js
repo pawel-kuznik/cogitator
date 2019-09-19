@@ -42,11 +42,15 @@ module.exports = class extends WebLocalStorage {
             // no file? try with parent
             if (!response.ok) return super.pull(objectStore);
 
-            // set the pulled data in the local storage
-            window.localStorage.setItem('templates', response.text());
+            // parse the response data to text and then return
+            return response.clone().text().then(data => {
 
-            // and after initialized object store we can pull data from local storage
-            return super.pull(objectStore);
+                // set the pulled data in the local storage
+                window.localStorage.setItem('templates', data);
+
+                // and after initialized object store we can pull data from local storage
+                return super.pull(objectStore);
+            });
 
         }, () => {
 
