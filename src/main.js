@@ -9,7 +9,7 @@
 const Router            = require('waystone').Router;
 const Container         = require('sparkle').Container;
 const TemplateStore     = require('408k').TemplateStore;
-const WebLocalStorage   = require('pocketdata').LocalWebStorage;
+const Storage           = require('./CustomStorage.js');
 
 // set the function
 window.Cogitator = { };
@@ -20,7 +20,7 @@ window.Cogitator = { };
 window.Cogitator.start = function () {
 
     // the template store
-    const templateStore = new TemplateStore(new WebLocalStorage('templates'));
+    const templateStore = new TemplateStore(new Storage());
 
     // install on document loaded event
     document.addEventListener('DOMContentLoaded', () => {
