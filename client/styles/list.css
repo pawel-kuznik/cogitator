@@ -51,3 +51,26 @@
 {
     background:     rgba(255, 255, 255, .1);
 }
+
+.item.hidden
+{
+    display:        none;
+}
+
+.listpage > form
+{
+    display: contents;
+}
+
+.listpage
+{
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap:    1rem;
+    align-items: baseline;
+}
+
+.listpage > div
+{
+    grid-column: span 3;
+}

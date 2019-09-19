@@ -21,13 +21,11 @@ module.exports = class extends Component {
 
     /**
      *  The constructor.
-     *  @param  Entity
-     *  @param  object  The options for the ListItem class:
-     *
-     *                  urlPrefix:string    The url prefix of the page allowing to
-     *                                      edit the entity.
+     *  @param  Component   The component responsible for showing the summary
+     *                      of the entity.
+     *  @param  Entity      The instance of the entity to show in the list.
      */
-    constructor(data, options = { }) {
+    constructor(Summary, data, options) {
 
         // call the parent constructor
         super();
@@ -35,13 +33,12 @@ module.exports = class extends Component {
         // add an item class to the container
         this.elem.classList.add('item');
 
+        // construct the summary
+        const summary = this.adopt(new Summary(data));
+        this.append(summary);
+
         // remember the entity
         this[entity] = data;
-
-        // construct a SPAN with the name of the entity
-        const name = document.createElement('SPAN');
-        name.textContent = this.entity.name;
-        this.elem.append(name);
 
         // construct a link to the edit page of the entity
         const edit = document.createElement('A');
@@ -82,4 +79,16 @@ module.exports = class extends Component {
      *  @return     Entity
      */
     get entity() { return this[entity]; }
+
+    show() {
+
+        // remove hidden class
+        this.elem.classList.remove('hidden');
+    }
+
+    hide() {
+
+        // add hidden class
+        this.elem.classList.add('hidden');
+    }
 };

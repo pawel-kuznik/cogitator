@@ -11,6 +11,7 @@
 // dependencies
 const Component = require('sparkle').Component;
 const List      = require('sparkle').List;
+const Item      = require('./ListItem.js');
 
 // the privates
 const list      = Symbol('list');
@@ -29,6 +30,9 @@ module.exports = class extends Component {
             template: '/templates/listpage.html'
         });
 
+        // add the class to the element
+        this.elem.classList.add('listpage');
+
         // the list component
         this[list] = this.adopt(new List());
 
@@ -37,6 +41,27 @@ module.exports = class extends Component {
 
             // update the create url
             this.elem.querySelector('a').setAttribute('href', formUrl);
+
+            // intercept the submit handler
+            this.elem.querySelector('form').addEventListener('submit', event => {
+
+                // no default handling
+                event.preventDefault();
+
+                // get the current value from the input
+                const keyword = this.elem.querySelector('form > input').value;
+
+                // iterate over the items and determine if they should be shown
+                // or hidden
+                for (let item of this[list]) {
+
+                    // if the item includes the keyword we can show the item
+                    if (item.entity.name.includes(keyword)) item.show();
+
+                    // hide the item
+                    else item.hide();
+                }
+            });
 
             // append the list to the element
             this[list].appendTo(this.elem);
@@ -53,7 +78,7 @@ module.exports = class extends Component {
     emplace(Constructor, ...args) {
 
         // construct an item
-        const item = this[list].add(Constructor, ...args);
+        const item = this[list].add(Item, Constructor, ...args);
 
         // install deleted handler on the item
         item.on('deleted', () => {
