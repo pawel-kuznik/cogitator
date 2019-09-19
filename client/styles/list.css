@@ -29,3 +29,25 @@
     display:        inline-block;
     white-space:    nowrap;
 }
+
+.item
+{
+    display:        grid;
+    grid-template-columns:  1fr;
+    grid-auto-flow: column;
+    grid-auto-columns: auto;
+    gap:            1em;
+    align-items:    baseline;
+
+    margin-left:    -.25rem;
+    margin-right:   -.25rem;
+    
+    padding:        .25rem;
+
+    transition:     background .4s;
+}
+
+.item:hover
+{
+    background:     rgba(255, 255, 255, .1);
+}

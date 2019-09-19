@@ -32,6 +32,9 @@ module.exports = class extends Component {
         // call the parent constructor
         super();
 
+        // add an item class to the container
+        this.elem.classList.add('item');
+
         // remember the entity
         this[entity] = data;
 
@@ -42,12 +45,14 @@ module.exports = class extends Component {
 
         // construct a link to the edit page of the entity
         const edit = document.createElement('A');
+        edit.classList.add('button');
         edit.setAttribute('href', options.urlPrefix + this.entity.id);
         edit.textContent = 'Edit';
         this.elem.append(edit);
 
         // construct a remove button
         const remove = document.createElement('BUTTON');
+        edit.classList.add('button');
         remove.textContent = 'Remove';
         this.elem.append(remove);
 
