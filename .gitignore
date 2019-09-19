@@ -1,5 +1,6 @@
 node_modules
 **.swp
 client/script.js
+client/templates.json
 package-lock.json
 chromedriver.log
