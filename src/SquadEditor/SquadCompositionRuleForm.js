@@ -57,7 +57,7 @@ module.exports = class extends Form {
         });
 
         // install onsubmit handler
-        this.on('submit', () => {
+        this.on('submitted', () => {
 
             // store the entity
             options.data.store();
