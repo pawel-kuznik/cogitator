@@ -2,6 +2,7 @@
 // the dependencies
 const SquadType     = require('408k').SquadType;
 const Form          = require('sparkle').Form;
+const createRow     = require('../common/createFormRow.js');
 
 // export the class
 module.exports = class extends Form {
@@ -16,15 +17,11 @@ module.exports = class extends Form {
             data:       options.data
         });
 
-        // construct the form row
-        const row = document.createElement('DIV');
-        row.classList.add('formrow');
-        this.append(row);
+        // construct 
+        const row = createRow('Battlefield role');
 
-        // construct the label
-        const label = document.createElement('LABEL');
-        label.textContent = 'Battlefield role';
-        row.appendChild(label);
+        // append the row
+        this.append(row);
 
         // construct the select
         const select = document.createElement('SELECT');
@@ -32,7 +29,7 @@ module.exports = class extends Form {
         row.appendChild(select);
 
         // iterate over the types
-        for(let type of SquadType) {
+        for (let type of SquadType) {
 
             // construct the option and append it to the child
             const option = document.createElement('OPTION');

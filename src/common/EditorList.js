@@ -27,6 +27,8 @@ module.exports = class extends Component {
      *                                          wants to create a new entity or
      *                                          edit an existing one.
      *
+     *                  formData                The addtional form data.
+     *
      *                  ItemComponent           The item component that shows the
      *                                          entity in the list.
      */
@@ -52,26 +54,26 @@ module.exports = class extends Component {
             this.elem.querySelector('button').addEventListener('click', () => {
 
                 // construct new modal
-                const modal = Modal.manager.create(this[FormComponent], this[data].build());
+                const modal = Modal.manager.create(this[FormComponent], Object.assign({ }, options.formData, { data: this[data].build() }));
 
                 // when the modal says that it was stored we can remove the modal
                 modal.component.on('stored', () => {
 
-                    // refresh the list
-                    this.pull();
-
                     // remove the modal
                     modal.remove();
+
+                    // refresh the list
+                    this.pull();
                 });
 
                 // when the modal says that it was deleted we can remove the modal
                 modal.component.on('deleted', () => {
 
-                    // refresh the list
-                    this.pull();
-
                     // remove the modal
                     modal.remove();
+
+                    // refresh the list
+                    this.pull();
                 });
             });
 

@@ -8,6 +8,7 @@ const Form          = require('sparkle').Form;
 const Editor        = require('./common/Editor.js');
 const Type          = require('./SquadEditor/Type.js');
 const Models        = require('./SquadEditor/ModelsList.js');
+const Composition   = require('./SquadEditor/SquadCompositionList.js');
 
 // export the class
 module.exports = class extends Editor {
@@ -30,6 +31,7 @@ module.exports = class extends Editor {
         this.add(Form, { template: '/templates/squadForm.html' });
         this.add(Type);
         this.add(Models, { data: squad.models });
+        this.add(Composition, { data: squad.composition.rules, squad: squad });
     }
 };
 
