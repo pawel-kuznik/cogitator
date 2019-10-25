@@ -1,14 +1,20 @@
+/**
+ *  These are styles for all kind of buttons user across the application.
+ *
+ *  @author     Paweł Kuźnik <pawel.kuznik@gmail.com>
+ */
+
 button,
-.button,
-input[type="submit"]
+.button
 {
-    border:     0;
-    background: slategrey;
-    color:      lightgrey;
+    border:         0;
 
-    cursor:     pointer;
+    background:     var(--color-font);
+    color:          var(--color-background);
 
-    box-sizing: border-box;
+    cursor:         pointer;
+
+    box-sizing:     border-box;
 
     padding-right:  .5rem;
 
@@ -16,4 +22,10 @@ input[type="submit"]
     padding-bottom: .25rem;
 
     box-shadow:     0 0 1px var(--color-font);
+}
+
+button:hover,
+.button:hover
+{
+    background-image:   repeating-linear-gradient(45deg, transparent 0, transparent 6px, var(--color-hover) 8px, var(--color-hover) 8px);
 }

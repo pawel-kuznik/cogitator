@@ -23,6 +23,10 @@ module.exports = class extends Component {
         // call the parent
         super();
 
+        // add the editoritem class so all of them look the same
+        this.elem.classList.add('item');
+
+        // assign the data instance
         this[data] = _data;
 
         const label = document.createElement('SPAN');
