@@ -69,7 +69,7 @@ module.exports = class extends Component {
             this.elem.querySelector('.button-remove').addEventListener('click', () => {
 
                 // remove the squad from the root
-                this[data].root.delete(squad);
+                this[data].root.delete(this[data]);
 
                 // flush the changes
                 this[data].root.flush();
