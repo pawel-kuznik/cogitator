@@ -22,6 +22,8 @@ button,
     padding-bottom: .25rem;
 
     box-shadow:     0 0 1px var(--color-font);
+
+    text-decoration: none;
 }
 
 button:hover,

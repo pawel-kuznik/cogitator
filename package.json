@@ -9,7 +9,9 @@
     "test:unit": "node_modules/.bin/http-server -p 9090 .",
     "build": "browserify src/main.js > client/script.js",
     "build:tests": "browserify tests/main.js > tests.js",
-    "build:all": "npm run build:tests && npm run build"
+    "build:all": "npm run build:tests && npm run build",
+    "build:styles": "node_modules/.bin/lessc styles/base.less client/styles.css"
+
   },
   "author": "",
   "license": "ISC",
@@ -24,6 +26,7 @@
     "chai": "^4.2.0",
     "chromedriver": "^75.1.0",
     "http-server": "^0.11.1",
+    "less": "^3.10.3",
     "mocha": "^6.2.0",
     "nightwatch": "^1.1.13"
   }

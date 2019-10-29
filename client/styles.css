@@ -1,17 +1,383 @@
 /**
- *  A kickstart file for all the styles.
+ *  These are styles for all kind of buttons user across the application.
  *
  *  @author     Paweł Kuźnik <pawel.kuznik@gmail.com>
  */
 
-@import "/styles/html.css";
-@import "/styles/input.css";
-@import "/styles/button.css";
-@import "/styles/form.css";
-@import "/styles/list.css";
-@import "/styles/table.css";
-@import "/styles/box.css";
-@import "/styles/mark.css";
-@import "/styles/links.css";
-@import "/styles/modal.css";
+button,
+.button
+{
+    border:         0;
+
+    background:     var(--color-font);
+    color:          var(--color-background);
+
+    cursor:         pointer;
+
+    box-sizing:     border-box;
+
+    padding-right:  .5rem;
+
+    padding-top:    .25rem;
+    padding-bottom: .25rem;
+
+    box-shadow:     0 0 1px var(--color-font);
+
+    text-decoration: none;
+}
+
+button:hover,
+.button:hover
+{
+    background-image:   repeating-linear-gradient(45deg, transparent 0, transparent 6px, var(--color-hover) 8px, var(--color-hover) 8px);
+}
+
+
+.formrow
+{
+    margin-bottom:  2rem;
+    margin-top:     1rem;
+}
+
+.formrow label
+{
+    display:    block;
+}
+
+.formrow input,
+.formrow select,
+.formrow textarea
+{
+    display:    block;
+    width:      100%;
+
+    box-sizing: border-box;
+
+    padding-right:  .5rem;
+
+    padding-top:    .25rem;
+    padding-bottom: .25rem;
+}
+
+.formrow input,
+.formrow select
+{
+    border-top:     none;
+    border-left:    none;
+    border-right:   none;
+}
+
+
+/**
+ *  Styles for the HTML element and the :root selector.
+ */
+
+/* reset HTML element */
+html
+{
+    margin:         0;
+    padding:        0;
+
+    background:     #262525;
+    color:          #E3E3E6;
+
+    font-family:    "Inconsolata", monospace;
+}
+
+/* set colors used across the application */
+:root
+{
+    --color-font:       #E3E3E6;
+    --color-background: #262525;
+    --color-mark:       hsla(-5, 93%, 57%, 0.8);
+    --color-hover:      rgba(227, 227, 230, .4);
+    --color-input-border: rgba(212, 212, 217, 0.6);
+}
+
+/**
+ *  Styles for inputs used inside the whole application.
+ */
+
+/* basic styles for the inptus */
+input[type="text"],
+input[type="password"],
+input[type="number"],
+textarea,
+select
+{
+    background:     transparent;
+
+    border:         1px solid var(--color-input-border);
+    color:          var(--color-font);
+
+    font-family:    inherit;
+
+    transition:     border-color .4s;
+}
+
+/* styles for when the element is focused */
+input:focus,
+textarea:focus,
+select:focus
+{
+    outline:        none;
+
+    border-color:   var(--color-font);
+}
+
+select:active option
+{
+    background:     var(--color-background);
+    color:          var(--color-font);
+}
+
+select:active option:checked
+{
+    color:          var(--color-mark);;
+}
+
+
+
+a
+{
+    color:              inherit;
+    text-decoration:    underline;
+}
+
+/**
+ *  Styles defining how tables should look like in the whole software.
+ */
+
+/* define colors and basic shadow for the header */
+table th
+{
+    background:     var(--color-font);
+    color:          var(--color-background);
+
+    box-shadow:     0 0 3px var(--color-font);
+}
+
+/* set basic formatting and the spacing inside a table cell */
+table th,
+table td
+{
+    font-family:    inherit;
+
+    padding-left:   1rem;
+    padding-right:  1rem;
+
+    padding-top:    .25rem;
+    padding-bottom: .1rem;
+
+    text-align:     left;
+}
+
+/* for various animations we want to have a transition on the background */
+table td
+{
+    transition:     background 1s;
+}
+
+/* when hover happens we want to highlight the row the user hovers */
+table tr:hover td
+{
+    background-color:   rgba(255, 255, 255, .01);
+    background-image:   repeating-linear-gradient(45deg, transparent 0, transparent 6px, var(--color-hover) 8px, var(--color-hover) 8px);
+}
+
+
+/* size classes */
+table.size-page { width: 80rem; }
+table.size-halfpage { width: 40rem; }
+
+
+
+.box
+{
+    border-top:     2px solid var(--color-font);
+
+    padding-top:    1rem;
+
+    margin-bottom:  2rem;
+    margin-top:     1rem;
+}
+
+.box.size-page
+{
+    max-width:      80em;
+}
+
+.box.size-halfpage
+{
+    max-width:      40em;
+}
+
+
+
+.list
+{
+    list-style:     none;
+
+    margin-top:     1rem;
+    margin-bottom:  2rem;
+
+    padding:        0;
+}
+
+.list > li
+{
+    padding: 0;
+}
+
+.list.list-decorated > li::before
+{
+    content:        '>++';
+    margin-right:   1rem;
+    opacity:        .6;
+
+    text-shadow:    0 0 3px var(--color-font);
+}
+
+.list.list-inline > li
+{
+    display:        inline-block;
+    white-space:    nowrap;
+}
+
+.item
+{
+    display:        grid;
+    grid-template-columns:  1fr;
+    grid-auto-flow: column;
+    grid-auto-columns: auto;
+    gap:            1em;
+    align-items:    baseline;
+
+    margin-left:    -.25rem;
+    margin-right:   -.25rem;
+    
+    padding:        .25rem;
+
+    transition:     background .4s;
+}
+
+.item:hover
+{
+    background:     rgba(255, 255, 255, .1);
+}
+
+.item.hidden
+{
+    display:        none;
+}
+
+.listpage > form
+{
+    display: contents;
+}
+
+.listpage
+{
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap:    1rem;
+    align-items: baseline;
+}
+
+.listpage > div
+{
+    grid-column: span 3;
+}
+
+
+
+@keyframes mark-pulse
+{
+    0%      {
+        background:   hsla(-5, 73%, 37%, 0.6);
+    }
+
+    50%    {
+        background:   hsla(-5, 73%, 37%, 0.8);
+        text-shadow:  0 0 3px var(--color-font);
+        box-shadow:   0 0 6px hsla(-5, 73%, 37%, 0.6);
+    }
+}
+
+.mark
+{
+    background:         hsla(-5, 73%, 37%, 0.6);
+    animation-name:             mark-pulse;
+    animation-duration:         2s;
+    animation-iteration-count:  infinite;
+}
+
+/**
+ *  The styles for the modal.
+ */
+
+.modal
+{
+    display:        none;
+    
+    background:     var(--color-background);
+    color:          var(--color-font);
+
+    width:          95%;
+
+    margin-left:    auto;
+    margin-right:   auto;
+
+    border:         1px solid var(--color-font);
+
+    transition:     top .2s;
+
+    top:            -100%;
+}
+
+.modal.shown
+{
+    display:        block;
+
+    top:            1rem;
+}
+
+.modalmanager
+{
+    position:       fixed;
+
+    top:            0;
+    bottom:         0;
+    left:           0;
+    right:          0;
+
+    background:     rgba(50, 50, 50, .2);
+}
+
+.modal.prompt
+{
+    padding:        2em 3em;
+
+    box-sizing:     border-box;
+    border:         1px solid rgba(255, 255, 255, .6);
+
+    margin-top:     5rem;
+    margin-bottom:  5rem;
+
+    max-height:     calc(100vh - 10rem);
+
+    max-width:      40rem;
+    margin-left:    auto;
+    margin-right:   auto;
+}
+
+.modalblur
+{
+    filter: blur(4px);
+}
+
+body > main
+{
+    transition: filter .2s;
+}
 
