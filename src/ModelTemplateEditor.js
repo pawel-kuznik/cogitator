@@ -1,5 +1,8 @@
 /**
  *  This is a component we use to edit or create a ModelTemplate.
+ *
+ *  @author Paweł Kuźnik <pawel.kuznik@gmail.com>
+ *  @file   src/ModelTemplateEditor.js
  */
 
 // the dependencies
@@ -11,7 +14,9 @@ module.exports = class extends Editor {
 
     /**
      *  The constructor.
-     *  @param  408k.ModelTemplate
+     *  @param  object      Options:
+     *
+     *                      data:408k.ModelTemplate     the template to edit
      */
     constructor(options) {
 
