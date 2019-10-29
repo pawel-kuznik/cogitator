@@ -9,7 +9,7 @@
 // the dependencies
 const EditorList    = require('../common/EditorList.js');
 const ModelEditor   = require('../ModelTemplateEditor.js');
-const Item          = require('../common/EditorItem.js');
+const Item          = require('./ModelItem.js');
 
 // export the component
 module.exports = class extends EditorList {
