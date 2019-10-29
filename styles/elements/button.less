@@ -1,0 +1,48 @@
+/**
+ *  These are styles for all kind of buttons user across the application.
+ *
+ *  @author     Paweł Kuźnik <pawel.kuznik@gmail.com>
+ */
+
+button,
+.button
+{
+    // a button is always an inline block
+    display:        inline-block;
+    
+    // reset border
+    border:         0;
+
+    // set background and the color
+    background:     var(--color-font);
+    color:          var(--color-background);
+
+    // it's always clickable
+    cursor:         pointer;
+
+    // set padding around the content
+    padding:        .2rem .4em;
+
+    // make sure we inherit the font from the surroundings
+    font:           inherit;
+
+    // set a bold font on the button
+    font-weight:    bold;
+
+    // make all buttons upper case
+    text-transform: uppercase;
+    
+    // make sure we change the box sizing to include the padding
+    box-sizing:     border-box;
+
+    box-shadow:     0 0 1px var(--color-font);
+
+    // reset text decotation cause it can be applied on a link
+    text-decoration: none;
+
+    // 
+    &:hover
+    {
+        background-image:   repeating-linear-gradient(45deg, transparent 0, transparent 6px, var(--color-hover) 8px, var(--color-hover) 8px);
+    }
+}

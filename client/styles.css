@@ -3,35 +3,25 @@
  *
  *  @author     Paweł Kuźnik <pawel.kuznik@gmail.com>
  */
-
 button,
-.button
-{
-    border:         0;
-
-    background:     var(--color-font);
-    color:          var(--color-background);
-
-    cursor:         pointer;
-
-    box-sizing:     border-box;
-
-    padding-right:  .5rem;
-
-    padding-top:    .25rem;
-    padding-bottom: .25rem;
-
-    box-shadow:     0 0 1px var(--color-font);
-
-    text-decoration: none;
+.button {
+  display: inline-block;
+  border: 0;
+  background: var(--color-font);
+  color: var(--color-background);
+  cursor: pointer;
+  padding: 0.2rem 0.4em;
+  font: inherit;
+  font-weight: bold;
+  text-transform: uppercase;
+  box-sizing: border-box;
+  box-shadow: 0 0 1px var(--color-font);
+  text-decoration: none;
 }
-
 button:hover,
-.button:hover
-{
-    background-image:   repeating-linear-gradient(45deg, transparent 0, transparent 6px, var(--color-hover) 8px, var(--color-hover) 8px);
+.button:hover {
+  background-image: repeating-linear-gradient(45deg, transparent 0, transparent 6px, var(--color-hover) 8px, var(--color-hover) 8px);
 }
-
 
 .formrow
 {
