@@ -13,7 +13,10 @@ module.exports = class extends Editor {
      *  The constructor.
      *  @param  408k.ModelTemplate
      */
-    constructor(model) {
+    constructor(options) {
+
+        // get the model into local scope
+        let model = options.data;
 
         // call the parent
         super({
