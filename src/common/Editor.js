@@ -8,6 +8,7 @@
  *  @event  deleted This event triggers when the edited entity was deleted.
  *
  *  @author Paweł Kuźnik <pawel.kuznik@gmail.com>
+ *  @file   src/common/Editor.js
  */
 
 // the dependencies
