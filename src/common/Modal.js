@@ -8,31 +8,13 @@
 // the dependencies
 const sparkle   = require('sparkle');
 const Component = sparkle.Component;
+const Manager   = require('./ModalManager.js');
 
 // the manager instance
-var manager;
+var manager = new Manager();
 
 // export the class
 module.exports = class extends Component {
-
-    /**
-     *  Get access to an application wide modal manager.
-     *  @return ModalManager
-     */
-    static get manager() {
-
-        // do we have a manager?
-        if (manager) return manager;
-
-        // get the class
-        const ModalManager = require('./ModalManager.js');
-
-        // construct a manager
-        manager = new ModalManager();
-
-        // return the manager
-        return manager;
-    }
 
     /**
      *  The constructor.
@@ -41,6 +23,9 @@ module.exports = class extends Component {
 
         // call the parent
         super({ elem: sparkle.DOM.createElement('DIV', { class: 'modal' }) });
+
+        // after the modal is created we want to add it to the manager
+        manager.add(this);
     }
 
     /**
@@ -66,6 +51,10 @@ module.exports = class extends Component {
      *  Hide the modal from the user.
      */
     hide() {
+
+
+        // add the modal to the current manager
+        manager.add(this);
 
         // remove the shown class
         this.elem.classList.remove('shown');

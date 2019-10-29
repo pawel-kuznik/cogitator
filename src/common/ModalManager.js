@@ -2,8 +2,7 @@
  *  This is a manager for various modals. This class allows for adding
  *  more modals on top of the existing ones and closing them in a managed way.
  *
- *  This class should not be instantiated just like that, but rather should
- *  be accessed via `Modal.manager` property.
+ *  @author     Paweł Kuźnik <pawel.kuznik@gmail.com>
  */
 
 // privates

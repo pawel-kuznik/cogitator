@@ -57,7 +57,7 @@ module.exports = class extends Component {
         remove.addEventListener('click', () => {
 
             // the ask prompt
-            const ask = Prompt.manager.show(Prompt, { question: "Confirm removal" });
+            const ask = new Prompt({ question: "Confirm removal" });
 
             // if the prompt says proceed then we can remove the data
             ask.on('proceed', () => {
@@ -71,6 +71,9 @@ module.exports = class extends Component {
                 // trigger deleted event
                 this.triggerer.triggerEvent('deleted');
             });
+
+            // show the prompt
+            ask.show();
         });
     }
 

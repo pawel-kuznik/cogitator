@@ -4,15 +4,28 @@
 
 .modal
 {
-    display:    none;
+    display:        none;
     
-    background: var(--color-background);
-    color:      var(--color-font);
+    background:     var(--color-background);
+    color:          var(--color-font);
+
+    width:          95%;
+
+    margin-left:    auto;
+    margin-right:   auto;
+
+    border:         1px solid var(--color-font);
+
+    transition:     top .2s;
+
+    top:            -100%;
 }
 
 .modal.shown
 {
-    display:    block;       
+    display:        block;
+
+    top:            1rem;
 }
 
 .modalmanager

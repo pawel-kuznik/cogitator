@@ -4,9 +4,9 @@
  */
 
 // the dependencies
-const List      = require('sparkle').List;
-const Component = require('sparkle').Component;
-const Modal     = require('./Modal.js');
+const List          = require('sparkle').List;
+const Component     = require('sparkle').Component;
+const ModalWrapper  = require('./ModalWrapper.js');
 
 // the privates
 const data          = Symbol('data');
@@ -54,7 +54,7 @@ module.exports = class extends Component {
             this.elem.querySelector('button').addEventListener('click', () => {
 
                 // construct new modal
-                const modal = Modal.manager.create(this[FormComponent], Object.assign({ }, options.formData, { data: this[data].build() }));
+                const modal = new ModalWrapper(this[FormComponent], Object.assign({ }, options.formData, { data: this[data].build() }));
 
                 // when the modal says that it was stored we can remove the modal
                 modal.component.on('stored', () => {
@@ -75,6 +75,9 @@ module.exports = class extends Component {
                     // refresh the list
                     this.pull();
                 });
+
+                // show the modal
+                modal.show();
             });
 
             // append the 
