@@ -50,8 +50,11 @@ module.exports = class extends Component {
             // remove the stored data
             _data.root.delete(_data);
 
-            // flush the changes
-            _data.root.flush();
+            // trigger event telling that the data was deleted
+            this.triggere.triggerEvent('deleted');
+
+            // and remove us cause the underlaying data was removed
+            this.remove();
         });
     }
 

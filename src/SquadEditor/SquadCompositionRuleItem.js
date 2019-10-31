@@ -15,8 +15,18 @@ module.exports = class extends EditorItem {
         // call the parent
         super(rule);
 
+        // add the model name
         const model = document.createElement('SPAN');
         model.textContent = rule.model.name;
         this.content.append(model);
+
+        // if the model is a base one we want to indicate it
+        if (rule.base) {
+
+            // construct the element
+            const base = document.createElement('SPAN');
+            base.textContent = '[ base model ]';
+            this.content.append(base);
+        }
     }
 };

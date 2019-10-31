@@ -110,6 +110,21 @@ module.exports = class extends Component {
             form.appendTo(content);
         });
 
+        // if any of the forms tells that there was a change inside we should
+        // inform the user that he needs to apply the changes via the main editor.
+        // Otherwise, the changes will not be applied at all.
+        form.on('changed', () => {
+
+            // get the attention element
+            const attention = this.content.querySelector('.editor-attention');  
+
+            // set the text
+            attention.textContent = "There was a change. For now it's a temporary change that is not yet applied to the database.";
+
+            // show the attention
+            attention.classList.add('shown');
+        });
+
         // return the created form
         return form;
     }

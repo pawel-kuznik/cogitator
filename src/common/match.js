@@ -1,7 +1,21 @@
+/**
+ *  This is a helper function to match an entity (specifically a SquadTemplate one)
+ *  if a series of keywords matches it. It will check the name of the squad,
+ *  keywords and faction keywords for a match.
+ *
+ *  @author     Paweł Kuźnik <pawel.kuznik@gmail.com>
+ *  @file       src/common/match.js
+ */
 
-
+/**
+ *  The function.
+ *  @param  array           An array of strings to match against.
+ *  @param  SquadTemplate   The entity to check.
+ *  @return bool
+ */
 module.exports = function(keywords, entity) {
 
+    // transform keywords to an array of TRUEs
     keywords = keywords.split(',').map(k => k.trim()).filter(keyword => {
 
         // lowercase the keword
@@ -30,8 +44,6 @@ module.exports = function(keywords, entity) {
         // no match
         return true;
     });
-
-    console.log(keywords);
 
     // no remaining keywords? then that means we have a hit on every keyword
     return !keywords.length;

@@ -21,9 +21,11 @@ module.exports = class extends EditorList {
 
         // call the parent constructor
         super({
-            data         :  options.data,
+            data:           options.data,
             FormComponent:  ModelEditor,
-            ItemComponent:  Item
+            ItemComponent:  Item,
+            title:          'Models',
+            description:    'A list of models that this squad can take.'
         });
     }
 };
