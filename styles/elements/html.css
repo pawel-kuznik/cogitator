@@ -14,6 +14,13 @@ html
     font-family:    "Inconsolata", monospace;
 }
 
+body > main
+{
+    max-width:      60em;
+    margin-left:    auto;
+    margin-right:   auto;
+}
+
 /* set colors used across the application */
 :root
 {
