@@ -51,7 +51,7 @@ module.exports = class extends Component {
             _data.root.delete(_data);
 
             // trigger event telling that the data was deleted
-            this.triggere.triggerEvent('deleted');
+            this.triggerer.triggerEvent('deleted');
 
             // and remove us cause the underlaying data was removed
             this.remove();

@@ -66,7 +66,7 @@ module.exports = class extends Form {
             options.data.root.flush();
 
             // tell others that it's stored
-            this.triggerer.triggerEvent('stored');
+            this.triggerer.triggerEvent('stored', { entity: options.data });
         });
     }
 };

@@ -60,7 +60,7 @@ module.exports = class extends Component {
                 this[data].root.flush();
 
                 // trigger stored event
-                this.triggerer.triggerEvent('stored');
+                this.triggerer.triggerEvent('stored', { entity: this[data] });
 
                 // go to the list of squads
                 if (options.listUrl) window.location.hash = options.listUrl;
