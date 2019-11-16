@@ -54,6 +54,13 @@ module.exports = class extends Form {
 
             // update the select with the models from the template
             updateSelect(select, options.squad.models);
+
+            // set the form with default values
+            this.fill({
+                count:          1,
+                powerRating:    0,
+                base:           true
+            });
         });
 
         // install onsubmit handler

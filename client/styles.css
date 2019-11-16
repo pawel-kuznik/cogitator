@@ -34,7 +34,7 @@ button:hover,
     display:    block;
 }
 
-.formrow input,
+.formrow input:not([type="checkbox"]):not([type="radio"]),
 .formrow select,
 .formrow textarea
 {
